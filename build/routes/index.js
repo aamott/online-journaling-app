@@ -41,6 +41,19 @@ const swaggerDocument = __importStar(require("../swagger.json"));
 const swaggerUi = require('swagger-ui-express');
 router.use('/api-docs', swaggerUi.serve);
 router.get('/api-docs', swaggerUi.setup(swaggerDocument));
+// Authorization routes
+// > Authorization - TODO: move to a separate file
+router.get('/authorized', function (_req, res) {
+    res.send('Secured Resource');
+});
+// > Sign up
+router.get('/sign-up', (_req, res) => {
+    res.oidc.login({
+        authorizationParams: {
+            screen_hint: 'signup',
+        },
+    });
+});
 /************
  * Export
  */

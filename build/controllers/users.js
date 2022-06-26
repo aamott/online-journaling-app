@@ -88,6 +88,7 @@ const fillerUsers = [
 ];
 // GET /users
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // #swagger.tags = ['Users']
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
@@ -100,6 +101,7 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getAllUsers = getAllUsers;
 // GET /users/:id
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // #swagger.tags = ['Users']
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
@@ -112,6 +114,7 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getUser = getUser;
 // POST /users
 const addUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // #swagger.tags = ['Users']
     // add the user to test data
     try {
         res.setHeader('Content-Type', 'application/json');
@@ -132,6 +135,7 @@ const addUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.addUser = addUser;
 // PUT /users/:id
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // #swagger.tags = ['Users']
     // update the user in test data
     try {
         res.setHeader('Content-Type', 'application/json');
@@ -169,6 +173,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.updateUser = updateUser;
 // DELETE /users/:id
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // #swagger.tags = ['Users']
     // delete the user from test data
     try {
         res.setHeader('Content-Type', 'application/json');
