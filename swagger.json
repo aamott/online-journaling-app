@@ -5,10 +5,10 @@
     "description": "A web app for journaling",
     "version": "1.0.0"
   },
-  "host": "http://localhost:8080/",
+  "host": "online-journey.herokuapp.com",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "paths": {
     "/api-docs": {
