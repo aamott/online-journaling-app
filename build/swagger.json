@@ -7,8 +7,24 @@
     },
     "host": "localhost:8080",
     "basePath": "/",
-    "schemes": ["https"],
+    "schemes": [
+        "https"
+    ],
     "paths": {
+        "/authorized": {
+            "get": {
+                "description": "",
+                "parameters": [],
+                "responses": {}
+            }
+        },
+        "/sign-up": {
+            "get": {
+                "description": "",
+                "parameters": [],
+                "responses": {}
+            }
+        },
         "/api-docs": {
             "get": {
                 "description": "",
@@ -19,7 +35,9 @@
         "/users/": {
             "get": {
                 "description": "",
-                "produces": ["application/json"],
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [],
                 "responses": {
                     "200": {
@@ -32,7 +50,9 @@
             },
             "post": {
                 "description": "",
-                "produces": ["application/json"],
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "body",
@@ -60,7 +80,9 @@
         "/users/{id}": {
             "get": {
                 "description": "",
-                "produces": ["application/json"],
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "id",
@@ -80,7 +102,9 @@
             },
             "put": {
                 "description": "",
-                "produces": ["application/json"],
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "id",
@@ -124,7 +148,9 @@
             },
             "delete": {
                 "description": "",
-                "produces": ["application/json"],
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "id",
