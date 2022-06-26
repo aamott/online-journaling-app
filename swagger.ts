@@ -12,6 +12,4 @@ const doc = {
 const outputFile = './swagger.json';
 const endpointsFiles = ['./app.ts'];
 
-swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
-  require('./app'); // Your project's root file
-});
+swaggerAutogen(outputFile, endpointsFiles, doc);
