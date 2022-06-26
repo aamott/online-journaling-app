@@ -9,9 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.addUser = exports.getUser = exports.getAllUsers = void 0;
 /******************
- * USERS CONTROLLER
+ * GOALS CONTROLLER
  */
 const mongodb_1 = require("mongodb");
 const mongodb = require('../db/connect');
@@ -22,66 +21,66 @@ const fillerUsers = [
         name: 'John Doe',
         entry_ids: [
             {
-                _id: new mongodb_1.ObjectId(1),
-                date_created: new Date(),
+                _id: new mongodb_1.ObjectId(2),
+                createdDate: new Date(),
                 title: 'My first entry',
             },
             {
-                _id: new mongodb_1.ObjectId(2),
-                date_created: new Date(),
+                _id: new mongodb_1.ObjectId(3),
+                createdDate: new Date(),
                 title: 'My second entry',
             }
         ],
         goal_ids: [
             {
-                _id: new mongodb_1.ObjectId(1),
+                _id: new mongodb_1.ObjectId(4),
             },
             {
-                _id: new mongodb_1.ObjectId(2),
+                _id: new mongodb_1.ObjectId(5),
             }
         ],
         media_ids: [
             {
-                _id: new mongodb_1.ObjectId(1),
-                date_added: new Date()
+                _id: new mongodb_1.ObjectId(6),
+                addedDate: new Date()
             },
             {
-                _id: new mongodb_1.ObjectId(2),
-                date_added: new Date()
+                _id: new mongodb_1.ObjectId(7),
+                addedDate: new Date()
             }
         ]
     },
     {
-        _id: new mongodb_1.ObjectId(2),
+        _id: new mongodb_1.ObjectId(8),
         name: 'Jane Doe',
         entry_ids: [
             {
-                _id: new mongodb_1.ObjectId(3),
-                date_created: new Date(),
+                _id: new mongodb_1.ObjectId(9),
+                createdDate: new Date(),
                 title: 'My first entry',
             },
             {
-                _id: new mongodb_1.ObjectId(4),
-                date_created: new Date(),
+                _id: new mongodb_1.ObjectId(0),
+                createdDate: new Date(),
                 title: 'My second entry',
             }
         ],
         goal_ids: [
             {
-                _id: new mongodb_1.ObjectId(3),
+                _id: new mongodb_1.ObjectId(4),
             },
             {
-                _id: new mongodb_1.ObjectId(4),
+                _id: new mongodb_1.ObjectId(5),
             }
         ],
         media_ids: [
             {
-                _id: new mongodb_1.ObjectId(3),
-                date_added: new Date()
+                _id: new mongodb_1.ObjectId(33),
+                addedDate: new Date()
             },
             {
-                _id: new mongodb_1.ObjectId(4),
-                date_added: new Date()
+                _id: new mongodb_1.ObjectId(6),
+                addedDate: new Date()
             }
         ]
     }
@@ -97,7 +96,6 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).send(err);
     }
 });
-exports.getAllUsers = getAllUsers;
 // GET /users/:id
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // return test data
@@ -109,7 +107,6 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).send(err);
     }
 });
-exports.getUser = getUser;
 // POST /users
 const addUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the user to test data
@@ -129,7 +126,6 @@ const addUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).send(err);
     }
 });
-exports.addUser = addUser;
 // PUT /users/:id
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // update the user in test data
@@ -166,7 +162,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(500).send(err);
     }
 });
-exports.updateUser = updateUser;
 // DELETE /users/:id
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // delete the user from test data
@@ -186,4 +181,3 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(500).send(err);
     }
 });
-exports.deleteUser = deleteUser;

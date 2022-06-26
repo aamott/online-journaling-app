@@ -35,7 +35,9 @@ const router = express_1.default.Router();
  * Routes
  */
 // Users routes
-router.use('/users', require('./users'));
+router.use('/users', require('./users') /* #swagger.tags = ['Users'] */);
+// Entries routes
+router.use('/entries', require('./entries') /* #swagger.tags = ['Entries'] */);
 // swagger routes
 const swaggerDocument = __importStar(require("../swagger.json"));
 const swaggerUi = require('swagger-ui-express');

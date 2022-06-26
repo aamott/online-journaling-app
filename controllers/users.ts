@@ -12,12 +12,12 @@ const fillerUsers = [
         entry_ids: [
             {
                 _id: new ObjectId(1),
-                createdDate: new Date(),
+                date_created: new Date(),
                 title: 'My first entry',
             },
             {
                 _id: new ObjectId(2),
-                createdDate: new Date(),
+                date_created: new Date(),
                 title: 'My second entry',
             }
         ],
@@ -32,11 +32,11 @@ const fillerUsers = [
         media_ids: [
             {
                 _id: new ObjectId(1),
-                addedDate: new Date()
+                date_added: new Date()
             },
             {
                 _id: new ObjectId(2),
-                addedDate: new Date()
+                date_added: new Date()
             }
         ]
     },
@@ -46,12 +46,12 @@ const fillerUsers = [
         entry_ids: [
             {
                 _id: new ObjectId(3),
-                createdDate: new Date(),
+                date_created: new Date(),
                 title: 'My first entry',
             },
             {
                 _id: new ObjectId(4),
-                createdDate: new Date(),
+                date_created: new Date(),
                 title: 'My second entry',
             }
         ],
@@ -66,11 +66,11 @@ const fillerUsers = [
         media_ids: [
             {
                 _id: new ObjectId(3),
-                addedDate: new Date()
+                date_added: new Date()
             },
             {
                 _id: new ObjectId(4),
-                addedDate: new Date()
+                date_added: new Date()
             }
         ]
     }
@@ -79,7 +79,6 @@ const fillerUsers = [
 
 // GET /users
 const getAllUsers = async (req: any, res: any) => {
-    // #swagger.tags = ['Users']
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json')
@@ -93,7 +92,6 @@ const getAllUsers = async (req: any, res: any) => {
 
 // GET /users/:id
 const getUser = async (req: any, res: any) => {
-    // #swagger.tags = ['Users']
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json')
@@ -107,7 +105,6 @@ const getUser = async (req: any, res: any) => {
 
 // POST /users
 const addUser = async (req: any, res: any) => {
-    // #swagger.tags = ['Users']
 
     // add the user to test data
     try {
@@ -130,7 +127,6 @@ const addUser = async (req: any, res: any) => {
 
 // PUT /users/:id
 const updateUser = async (req: any, res: any) => {
-    // #swagger.tags = ['Users']
 
     // update the user in test data
     try {
@@ -176,7 +172,6 @@ const updateUser = async (req: any, res: any) => {
 
 // DELETE /users/:id
 const deleteUser = async (req: any, res: any) => {
-    // #swagger.tags = ['Users']
     
     // delete the user from test data
     try {

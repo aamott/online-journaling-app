@@ -8,7 +8,10 @@ const router = express.Router();
  * Routes
  */
 // Users routes
-router.use('/users', require('./users'));
+router.use('/users', require('./users') /* #swagger.tags = ['Users'] */);
+
+// Entries routes
+router.use('/entries', require('./entries') /* #swagger.tags = ['Entries'] */ );
 
 // swagger routes
 import * as swaggerDocument from '../swagger.json';
