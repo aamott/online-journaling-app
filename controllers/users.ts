@@ -7,69 +7,69 @@ const mongodb = require('../db/connect');
 // filler data for testing
 const fillerUsers = [
     {
-        _id: new ObjectId('4c8f8f8f8f8f8f8f8f8f8f8'),
+        _id: new ObjectId(1),
         name: 'John Doe',
         entry_ids: [
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8f8'),
+                _id: new ObjectId(1),
                 createdDate: new Date(),
                 title: 'My first entry',
             },
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8f9'),
+                _id: new ObjectId(2),
                 createdDate: new Date(),
                 title: 'My second entry',
             }
         ],
         goal_ids: [
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8f9'),
+                _id: new ObjectId(1),
             },
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8f9'),
+                _id: new ObjectId(2),
             }
         ],
         media_ids: [
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8f10'),
+                _id: new ObjectId(1),
                 addedDate: new Date()
             },
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8f9'),
+                _id: new ObjectId(2),
                 addedDate: new Date()
             }
         ]
     },
     {
-        _id: new ObjectId('4c8f8f8f8f8f8f8f8f8f8f9'),
+        _id: new ObjectId(2),
         name: 'Jane Doe',
         entry_ids: [
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8c8'),
+                _id: new ObjectId(3),
                 createdDate: new Date(),
                 title: 'My first entry',
             },
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8c8c9'),
+                _id: new ObjectId(4),
                 createdDate: new Date(),
                 title: 'My second entry',
             }
         ],
         goal_ids: [
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f8c9'),
+                _id: new ObjectId(3),
             },
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f9c9'),
+                _id: new ObjectId(4),
             }
         ],
         media_ids: [
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8f8f7c8'),
+                _id: new ObjectId(3),
                 addedDate: new Date()
             },
             {
-                _id: new ObjectId('5c8f8f8f8f8f8f8f8c8f8c9'),
+                _id: new ObjectId(4),
                 addedDate: new Date()
             }
         ]
@@ -189,3 +189,6 @@ const deleteUser = async (req: any, res: any) => {
         res.status(500).send(err);
     }
 };
+
+
+export { getAllUsers, getUser, addUser, updateUser, deleteUser };

@@ -9,16 +9,16 @@ const users = require('../controllers/users');
 // Get all users
 router.get('/', users.getAllUsers);
 
-// Get a specific user
+// // Get a specific user
 router.get('/:id', users.getUser);
 
-// Add a new user
+// // Add a new user
 router.post('/', requiresAuth(), users.addUser);
 
-// Update a user
+// // Update a user
 router.put('/:id', requiresAuth(), users.updateUser);
 
-// Delete a user
+// // Delete a user
 router.delete('/:id', requiresAuth(), users.deleteUser);
 
 module.exports = router;
