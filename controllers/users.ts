@@ -79,6 +79,7 @@ const fillerUsers = [
 
 // GET /users
 const getAllUsers = async (req: any, res: any) => {
+    // #swagger.tags = ['Users']
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json')
@@ -92,6 +93,7 @@ const getAllUsers = async (req: any, res: any) => {
 
 // GET /users/:id
 const getUser = async (req: any, res: any) => {
+    // #swagger.tags = ['Users']
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json')
@@ -105,6 +107,8 @@ const getUser = async (req: any, res: any) => {
 
 // POST /users
 const addUser = async (req: any, res: any) => {
+    // #swagger.tags = ['Users']
+
     // add the user to test data
     try {
         res.setHeader('Content-Type', 'application/json')
@@ -126,6 +130,8 @@ const addUser = async (req: any, res: any) => {
 
 // PUT /users/:id
 const updateUser = async (req: any, res: any) => {
+    // #swagger.tags = ['Users']
+
     // update the user in test data
     try {
         res.setHeader('Content-Type', 'application/json')
@@ -170,6 +176,8 @@ const updateUser = async (req: any, res: any) => {
 
 // DELETE /users/:id
 const deleteUser = async (req: any, res: any) => {
+    // #swagger.tags = ['Users']
+    
     // delete the user from test data
     try {
         res.setHeader('Content-Type', 'application/json')
