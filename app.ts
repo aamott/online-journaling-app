@@ -30,20 +30,6 @@ app.use(auth(config));
  */
 app.use('/', require('./routes/index'));
 
-// > Authorization - TODO: move to a separate file
-app.get('/authorized', function (_req: any, res: { send: (arg0: string) => void; }) {
-    res.send('Secured Resource');
-});
-
-// > Sign up
-app.get('/sign-up', (_req: any, res: { oidc: { login: (arg0: { authorizationParams: { screen_hint: string; }; }) => void; }; }) => {
-    res.oidc.login({
-        authorizationParams: {
-            screen_hint: 'signup',
-        },
-    });
-});
-
 
 /********
  * Connect database and start server
