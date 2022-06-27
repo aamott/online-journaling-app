@@ -93,7 +93,7 @@ const getEntry = async (req: any, res: any) => {
 // POST /entries
 const addEntry = async (req: {
     body: {
-        location: string; 
+        location: string | null; 
         tags: Array<string>;
         entry: string; 
         media_ids: Array<string> | null; 
@@ -104,8 +104,8 @@ const addEntry = async (req: {
     try {
         res.setHeader('Content-Type', 'application/json');
 
-        let location = req.body.location || null;
-        let tags = req.body.tags || null;
+        let location = req.body.location;
+        let tags = req.body.tags;
 
         // make sure tags is a list
         if (tags && !Array.isArray(tags)) {
@@ -149,10 +149,7 @@ const addEntry = async (req: {
             tags: tags,
             entry: entry,
             media_ids: media_object_ids,
-            goal_ids: [
-                new ObjectId(1),
-                new ObjectId(2),
-            ],
+            goal_ids: goal_object_ids
         };
 
         fillerEntries.push(newEntry);
