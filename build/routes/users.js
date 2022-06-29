@@ -11,9 +11,9 @@ const express_openid_connect_1 = require("express-openid-connect");
 const router = express_1.default.Router();
 const users = require('../controllers/users');
 // Get all users
-router.get('/', users.getAllUsers);
+router.get('/', (0, express_openid_connect_1.requiresAuth)(), users.getAllUsers);
 // Get a specific user
-router.get('/:id', users.getUser);
+router.get('/:id', (0, express_openid_connect_1.requiresAuth)(), users.getUser);
 // Add a new user
 router.post('/', (0, express_openid_connect_1.requiresAuth)(), users.addUser);
 // Update a user
