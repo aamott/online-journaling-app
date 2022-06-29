@@ -13,6 +13,9 @@ router.use('/users', require('./users') /* #swagger.tags = ['Users'] */);
 // Entries routes
 router.use('/entries', require('./entries') /* #swagger.tags = ['Entries'] */ );
 
+// Media routes
+router.use('/media', require('./media') /* #swagger.tags = ['Media'] */);
+
 // swagger routes
 import * as swaggerDocument from '../swagger.json';
 const swaggerUi = require('swagger-ui-express');

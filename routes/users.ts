@@ -7,10 +7,10 @@ const router = express.Router();
 const users = require('../controllers/users');
 
 // Get all users
-router.get('/', users.getAllUsers);
+router.get('/', requiresAuth(), users.getAllUsers);
 
 // Get a specific user
-router.get('/:id', users.getUser);
+router.get('/:id', requiresAuth(), users.getUser);
 
 // Add a new user
 router.post('/', requiresAuth(), users.addUser);
