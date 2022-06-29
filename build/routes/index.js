@@ -38,6 +38,8 @@ const router = express_1.default.Router();
 router.use('/users', require('./users') /* #swagger.tags = ['Users'] */);
 // Entries routes
 router.use('/entries', require('./entries') /* #swagger.tags = ['Entries'] */);
+//Goals routes
+router.use('/goals', require('./goals') /* #swagger.tags = ['Goals'] */);
 // Media routes
 router.use('/media', require('./media') /* #swagger.tags = ['Media'] */);
 // swagger routes
