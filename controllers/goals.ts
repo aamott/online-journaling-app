@@ -5,10 +5,10 @@
  const mongodb = require('../db/connect');
  
  // filler data for testing
- const fillerUsers = [
+ const fillerGoals = [
      {
          _id: new ObjectId(1),
-         name: 'John Doe',
+         name: 'First Goal',
          entry_ids: [
              {
                  _id: new ObjectId(2),
@@ -42,7 +42,7 @@
      },
      {
          _id: new ObjectId(8),
-         name: 'Jane Doe',
+         name: 'Second Goal',
          entry_ids: [
              {
                  _id: new ObjectId(9),
@@ -77,12 +77,12 @@
  ];
  
  
- // GET /users
- const getAllUsers = async (req: any, res: any) => {
+ // GET /goals
+ const getAllGoals = async (req: any, res: any) => {
      // return test data
      try {
          res.setHeader('Content-Type', 'application/json')
-         res.status(200).send(JSON.stringify(fillerUsers));
+         res.status(200).send(JSON.stringify(fillerGoals));
      }
      catch (err) {
          res.status(500).send(err);
@@ -90,12 +90,12 @@
  };
  
  
- // GET /users/:id
- const getUser = async (req: any, res: any) => {
+ // GET /goals/:id
+ const getGoals = async (req: any, res: any) => {
      // return test data
      try {
          res.setHeader('Content-Type', 'application/json')
-         res.status(200).send(JSON.stringify(fillerUsers[0]));
+         res.status(200).send(JSON.stringify(fillerGoals[0]));
      }
      catch (err) {
          res.status(500).send(err);
@@ -104,19 +104,19 @@
  
  
  // POST /users
- const addUser = async (req: any, res: any) => {
-     // add the user to test data
+ const addGoal = async (req: any, res: any) => {
+     // add the goal to test data
      try {
          res.setHeader('Content-Type', 'application/json')
-         let newUser = {
+         let newGoal = {
              _id: new ObjectId(),
              name: req.body.name,
              entry_ids: [],
              goal_ids: [],
              media_ids: []
          }
-         fillerUsers.push(newUser);
-         res.status(200).send(JSON.stringify(newUser._id));
+         fillerGoals.push(newGoal);
+         res.status(200).send(JSON.stringify(newGoal._id));
      }
      catch (err) {
          res.status(500).send(err);
@@ -124,43 +124,30 @@
  };
  
  
- // PUT /users/:id
- const updateUser = async (req: any, res: any) => {
-     // update the user in test data
+ // PUT /goals/:id
+ const updateGoal = async (req: any, res: any) => {
+     // update the goal in test data
      try {
          res.setHeader('Content-Type', 'application/json')
-         let user = fillerUsers.find( (user) => user._id.toString() === req.params.id);
+         let goal = fillerGoals.find( (goal) => goal._id.toString() === req.params.id);
          
          // return 404 if user not found
-         if (!user) {
+         if (!goal) {
              res.status(404).send('User not found');
              return;
          }
  
-         user.name = req.body.name || user.name;
+         goal.name = req.body.name || goal.name;
          
-         // Loop through entries. If an entry doesn't exist in the user's entries, add it.
-         for (let entry of req.body.entry_ids) {
-             if (!user.entry_ids.find( (entry_id: { _id: ObjectId ; }) => entry_id._id.toString() === entry._id.toString())) {
-                 user.entry_ids.push(entry);
-             }
-         }
- 
-         // Loop through media. If an entry doesn't exist in the user's media, add it.
-         for (let entry of req.body.media_ids) {
-             if (!user.media_ids.find((entry_id: { _id: ObjectId; }) => entry_id._id.toString() === entry._id.toString())) {
-                 user.media_ids.push(entry);
-             }
-         }
  
          // Loop through goals. If an entry doesn't exist in the user's goals, add it.
          for (let entry of req.body.goal_ids) {
-             if (!user.goal_ids.find((entry_id: { _id: ObjectId; }) => entry_id._id.toString() === entry._id.toString())) {
-                 user.goal_ids.push(entry);
+             if (!req.body.goal_ids.find((entry_id: { _id: ObjectId; }) => entry_id._id.toString() === entry._id.toString())) {
+                 goal.goal_ids.push(entry);
              }
          }
  
-         res.status(200).send(JSON.stringify(user));
+         res.status(200).send(JSON.stringify(goal));
      }
      catch (err) {
          res.status(500).send(err);
@@ -169,20 +156,20 @@
  
  
  // DELETE /users/:id
- const deleteUser = async (req: any, res: any) => {
-     // delete the user from test data
+ const deleteGoal = async (req: any, res: any) => {
+     // delete the goal from test data
      try {
          res.setHeader('Content-Type', 'application/json')
-         let user = fillerUsers.find( (user) => user._id.toString() === req.params.id);
+         let goal = fillerGoals.find( (goal) => goal._id.toString() === req.params.id);
          
-         // return 404 if user not found
-         if (!user) {
-             res.status(404).send('User not found');
+         // return 404 if goal not found
+         if (!goal) {
+             res.status(404).send('Goal not found');
              return;
          }
  
-         let index = fillerUsers.indexOf(user);
-         fillerUsers.splice(index, 1);
+         let index = fillerGoals.indexOf(goal);
+         fillerGoals.splice(index, 1);
          res.status(200).send(JSON.stringify(1)); // return number of users deleted
      }
      catch (err) {
