@@ -6,73 +6,35 @@
  
  // filler data for testing
  const fillerGoals = [
+    {
+        name: 'Second Goal',
+        _id: "new ObjectId(1)",
+        createdDate: new Date(),
+        dueDate: new Date(), 
+        deletedDate: new Date(),
+        entry_ids: [
+           "new ObjectId(9)",
+           "new ObjectId(0)",
+        ],
+        media_ids:  [
+           "new ObjectId(9)",
+           "new ObjectId(0)",
+        ],
+    },
      {
-         _id: new ObjectId(1),
-         name: 'First Goal',
-         entry_ids: [
-             {
-                 _id: new ObjectId(2),
-                 createdDate: new Date(),
-                 title: 'My first entry',
-             },
-             {
-                 _id: new ObjectId(3),
-                 createdDate: new Date(),
-                 title: 'My second entry',
-             }
-         ],
-         goal_ids: [
-             {
-                 _id: new ObjectId(4),
-             },
-             {
-                 _id: new ObjectId(5),
-             }
-         ],
-         media_ids: [
-             {
-                 _id: new ObjectId(6),
-                 addedDate: new Date()
-             },
-             {
-                 _id: new ObjectId(7),
-                 addedDate: new Date()
-             }
-         ]
-     },
-     {
-         _id: new ObjectId(8),
+         _id: "new ObjectId(8)",
          name: 'Second Goal',
+         createdDate: new Date(),
+         dueDate: new Date(), 
+         deletedDate: new Date(),
          entry_ids: [
-             {
-                 _id: new ObjectId(9),
-                 createdDate: new Date(),
-                 title: 'My first entry',
-             },
-             {
-                 _id: new ObjectId(0),
-                 createdDate: new Date(),
-                 title: 'My second entry',
-             }
+            "new ObjectId(9)",
+            "new ObjectId(0)",
          ],
-         goal_ids: [
-             {
-                 _id: new ObjectId(4),
-             },
-             {
-                 _id: new ObjectId(5),
-             }
+         media_ids:  [
+            "new ObjectId(9)",
+            "new ObjectId(0)",
          ],
-         media_ids: [
-             {
-                 _id: new ObjectId(33),
-                 addedDate: new Date()
-             },
-             {
-                 _id: new ObjectId(6),
-                 addedDate: new Date()
-             }
-         ]
      }
  ];
  
@@ -91,7 +53,7 @@
  
  
  // GET /goals/:id
- const getGoals = async (req: any, res: any) => {
+ const getGoal = async (req: any, res: any) => {
      // return test data
      try {
          res.setHeader('Content-Type', 'application/json')
@@ -109,11 +71,21 @@
      try {
          res.setHeader('Content-Type', 'application/json')
          let newGoal = {
-             _id: new ObjectId(),
-             name: req.body.name,
-             entry_ids: [],
-             goal_ids: [],
-             media_ids: []
+            
+                _id: "new ObjectId(8)",
+                name: 'Second Goal',
+                createdDate: new Date(),
+                dueDate: new Date(), 
+                deletedDate: new Date(),
+                entry_ids: [
+                   "new ObjectId(9)",
+                   "new ObjectId(0)",
+                ],
+                media_ids:  [
+                   "new ObjectId(9)",
+                   "new ObjectId(0)",
+                ],
+            
          }
          fillerGoals.push(newGoal);
          res.status(200).send(JSON.stringify(newGoal._id));
@@ -143,7 +115,7 @@
          // Loop through goals. If an entry doesn't exist in the user's goals, add it.
          for (let entry of req.body.goal_ids) {
              if (!req.body.goal_ids.find((entry_id: { _id: ObjectId; }) => entry_id._id.toString() === entry._id.toString())) {
-                 goal.goal_ids.push(entry);
+                 goal.entry_ids.push(entry);
              }
          }
  
@@ -176,3 +148,6 @@
          res.status(500).send(err);
      }
  };
+
+
+ export { getAllGoals, getGoal, addGoal, updateGoal, deleteGoal };

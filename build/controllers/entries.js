@@ -97,8 +97,8 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the entry to test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let location = req.body.location || null;
-        let tags = req.body.tags || null;
+        let location = req.body.location;
+        let tags = req.body.tags;
         // make sure tags is a list
         if (tags && !Array.isArray(tags)) {
             tags = [tags];
@@ -136,10 +136,7 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             tags: tags,
             entry: entry,
             media_ids: media_object_ids,
-            goal_ids: [
-                new mongodb_1.ObjectId(1),
-                new mongodb_1.ObjectId(2),
-            ],
+            goal_ids: goal_object_ids
         };
         fillerEntries.push(newEntry);
         newEntry._id = new mongodb_1.ObjectId(fillerEntries.length);
