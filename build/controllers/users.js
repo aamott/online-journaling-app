@@ -103,7 +103,8 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify(fillerUsers[0]));
+        let user = fillerUsers.find((user) => user._id.toString() === req.params.id);
+        res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
         res.status(500).send(err);
@@ -142,24 +143,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return;
         }
         user.name = req.body.name || user.name;
-        // Loop through entries. If an entry doesn't exist in the user's entries, add it.
-        for (let entry of req.body.entry_ids) {
-            if (!user.entry_ids.find((entry_id) => entry_id._id.toString() === entry._id.toString())) {
-                user.entry_ids.push(entry);
-            }
-        }
-        // Loop through media. If an entry doesn't exist in the user's media, add it.
-        for (let entry of req.body.media_ids) {
-            if (!user.media_ids.find((entry_id) => entry_id._id.toString() === entry._id.toString())) {
-                user.media_ids.push(entry);
-            }
-        }
-        // Loop through goals. If an entry doesn't exist in the user's goals, add it.
-        for (let entry of req.body.goal_ids) {
-            if (!user.goal_ids.find((entry_id) => entry_id._id.toString() === entry._id.toString())) {
-                user.goal_ids.push(entry);
-            }
-        }
         res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
