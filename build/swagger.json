@@ -132,15 +132,6 @@
                             "properties": {
                                 "name": {
                                     "example": "any"
-                                },
-                                "entry_ids": {
-                                    "example": "any"
-                                },
-                                "media_ids": {
-                                    "example": "any"
-                                },
-                                "goal_ids": {
-                                    "example": "any"
                                 }
                             }
                         }
