@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const mongodb_1 = require("mongodb");
 const users_1 = require("../../controllers/users");
 describe('Users', () => {
     test('responds to /users', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,5 +38,36 @@ describe('Users', () => {
         expect(send).toHaveBeenCalled();
         let response = JSON.parse(users_json);
         expect(response).toBeInstanceOf(Array);
+    }));
+    test('responds to /users/:id', () => __awaiter(void 0, void 0, void 0, function* () {
+        // create a variable to store the response
+        let user_json = "";
+        // mock the send function
+        const send = jest.fn().mockImplementation(() => {
+            user_json = send.mock.calls[0][0];
+        });
+        // mock the request object
+        const req = {
+            params: {
+                id: new mongodb_1.ObjectId()
+            }
+        };
+        // mock the response
+        const res = {
+            user: null,
+            setHeader: jest.fn(),
+            status: jest.fn().mockReturnValue({
+                send: send
+            }),
+            send: send
+        };
+        // call the function
+        yield (0, users_1.getUser)(req, res);
+        // check the response
+        expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(send).toHaveBeenCalled();
+        let response = JSON.parse(user_json);
+        expect(response).toBeInstanceOf(Object);
     }));
 });
