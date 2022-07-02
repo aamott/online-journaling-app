@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
 const users_1 = require("../../controllers/users");
 describe('Users', () => {
-    test('responds to /users', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to GET /users', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let users_json = "";
         // mock the send function
@@ -39,7 +39,7 @@ describe('Users', () => {
         let response = JSON.parse(users_json);
         expect(response).toBeInstanceOf(Array);
     }));
-    test('responds to /users/:id', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to GET /users/:id', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let user_json = "";
         // mock the send function
@@ -69,5 +69,45 @@ describe('Users', () => {
         expect(send).toHaveBeenCalled();
         let response = JSON.parse(user_json);
         expect(response).toBeInstanceOf(Object);
+    }));
+    test('responds to POST /users', () => __awaiter(void 0, void 0, void 0, function* () {
+        // create a variable to store the response
+        let response_json = "";
+        // mock the send function
+        const send = jest.fn().mockImplementation(() => {
+            response_json = send.mock.calls[0][0];
+        } // mock the request object
+        );
+        const req = {
+            body: {
+                name: "Test User"
+            }
+        };
+        // mock the response
+        const res = {
+            user: null,
+            setHeader: jest.fn(),
+            status: jest.fn().mockReturnValue({
+                send: send
+            }),
+            send: send
+        };
+        // call the function
+        yield (0, users_1.addUser)(req, res);
+        // check the response
+        expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(send).toHaveBeenCalled();
+        // check that the response was an ObjectId
+        let response = JSON.parse(response_json);
+        // check that the response was an ObjectId
+        let id;
+        try {
+            id = new mongodb_1.ObjectId(response);
+        }
+        catch (err) {
+            id = null;
+        }
+        expect(id).toBeInstanceOf(mongodb_1.ObjectId);
     }));
 });
