@@ -1,34 +1,28 @@
 import { ObjectId } from 'mongodb';
 import {getAllUsers, getUser, addUser, updateUser, deleteUser} from '../../controllers/users';
 
-const testUsers = [
-    {
-        _id: new ObjectId(),
-        name: 'Test User',
-        entry_ids: [],
-        goal_ids: [],
-        media_ids: []
-    }
-];
-
 describe('Users', () => {
 
     test('responds to /users', async () => {
+        // create a variable to store the response
+        let users_json = "";
+
+        // mock the send function
+        const send = jest.fn().mockImplementation(() => {
+            users_json = send.mock.calls[0][0];
+        });
+
+        // mock the request object
         const req = {};
 
         // mock the response
         const res = {
             users: null,
             setHeader: jest.fn(),
-            // test res.status().send()
-            status: jest.fn(() => {
-                return {
-                    send: jest.fn()
-                }
+            status: jest.fn().mockReturnValue({
+                send: send
             }),
-            send: function(input: any) {
-                this.users = input;
-            }
+            send: send
         };
 
         // call the function
@@ -37,8 +31,9 @@ describe('Users', () => {
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
-        // expect res.send to have been called with a dictionary of users
-        // expect(res.send).toHaveBeenCalledWith(JSON.stringify(testUsers));
+        expect(send).toHaveBeenCalled();
+        let response = JSON.parse(users_json);
+        expect(response).toBeInstanceOf(Array);
     });
 
 });
