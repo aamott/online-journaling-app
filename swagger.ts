@@ -7,8 +7,19 @@ const doc = {
   },
   host: 'online-journey.herokuapp.com',
   // host: "localhost:8080",
-  schemes: ['https']
-  // schemes: ['http']
+  schemes: ['https'],
+  // schemes: ['http'],
+  securityDefinitions: {
+    oAuthSample: {
+      type: 'oauth2',
+      authorizationUrl: 'online-journey.herokuapp.com/login',
+      flow: 'implicit',
+      scopes: {
+        read_data: 'read your data',
+        write_data: 'modify data in your account'
+      }
+    }
+  }
 };
 
 const outputFile = './swagger.json';
