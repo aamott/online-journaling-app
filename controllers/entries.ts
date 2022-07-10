@@ -92,13 +92,7 @@ const getEntry = async (req: any, res: any) => {
 
 // POST /entries
 const addEntry = async (req: {
-    body: {
-        location: string | null; 
-        tags: Array<string>;
-        entry: string; 
-        media_ids: Array<string> | null; 
-        goal_ids: Array<string> | null;
-    };
+    body: any;
 }, res: any) => {
     // add the entry to test data
     try {
@@ -126,7 +120,7 @@ const addEntry = async (req: {
         }
         let media_object_ids: ObjectId[] = [];
         if (media_ids) {
-            media_object_ids = media_ids.map((id) => new ObjectId(id));
+            media_object_ids = media_ids.map((id:string) => new ObjectId(id));
         }
 
         // Make sure goal_ids is an Array of ObjectIds
@@ -136,7 +130,7 @@ const addEntry = async (req: {
         }
         let goal_object_ids: ObjectId[] = [];
         if (goal_ids) {
-            goal_object_ids = goal_ids.map((id) => new ObjectId(id));
+            goal_object_ids = goal_ids.map((id:string) => new ObjectId(id));
         }
 
 
@@ -164,14 +158,8 @@ const addEntry = async (req: {
 
 // PUT /entries/:id
 const updateEntry = async (req: {
-    params: { id: string; }; body: {
-        tags: string[];
-        location: string | null;
-        entry: string;
-        entry_ids: any;
-        media_ids: any;
-        goal_ids: any;
-    };
+    params: { id: string; }; body: any
+    ;
 }, res: any) => {
 
     res.setHeader('Content-Type', 'application/json');
