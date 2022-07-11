@@ -10,15 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
-const goals_1 = require("../../controllers/goals");
-let temp_media_id = new mongodb_1.ObjectId(1).toString();
+const users_1 = require("../../controllers/users");
+let temp_user_id = new mongodb_1.ObjectId(1);
 describe('Users', () => {
-    test('responds to GET /media', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to GET /users', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
-        let media_json = "";
+        let users_json = "";
         // mock the send function
         const send = jest.fn().mockImplementation(() => {
-            media_json = send.mock.calls[0][0];
+            users_json = send.mock.calls[0][0];
         });
         // mock the request object
         const req = {};
@@ -32,16 +32,16 @@ describe('Users', () => {
             send: send
         };
         // call the function
-        yield (0, goals_1.getGoal)(req, res);
+        yield (0, users_1.getAllUsers)(req, res);
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
         expect(send).toHaveBeenCalled();
-        let response = JSON.parse(media_json);
+        let response = JSON.parse(users_json);
         expect(response).toBeInstanceOf(Array);
-        temp_media_id = response[0]._id;
+        temp_user_id = response[0]._id;
     }));
-    test('responds to POST /media', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to POST /users', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let response_json = "";
         // mock the send function
@@ -51,7 +51,7 @@ describe('Users', () => {
         // mock the request object
         const req = {
             body: {
-                name: "Test Media"
+                name: "Test User"
             }
         };
         // mock the response
@@ -64,7 +64,7 @@ describe('Users', () => {
             send: send
         };
         // call the function
-        yield (0, goals_1.addGoal)(req, res);
+        yield (0, users_1.addUser)(req, res);
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
@@ -75,14 +75,14 @@ describe('Users', () => {
         let id;
         try {
             id = new mongodb_1.ObjectId(response);
-            // temp_media_id = id;
+            // temp_user_id = id;
         }
         catch (err) {
             id = null;
         }
         expect(id).toBeInstanceOf(mongodb_1.ObjectId);
     }));
-    test('responds to GET /media/:id', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to GET /users/:id', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let user_json = "";
         // mock the send function
@@ -92,7 +92,7 @@ describe('Users', () => {
         // mock the request object
         const req = {
             params: {
-                id: temp_media_id
+                id: temp_user_id
             }
         };
         // mock the response
@@ -105,7 +105,7 @@ describe('Users', () => {
             send: send
         };
         // call the function
-        yield (0, goals_1.getGoal)(req, res);
+        yield (0, users_1.getUser)(req, res);
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
@@ -113,7 +113,7 @@ describe('Users', () => {
         let response = JSON.parse(user_json);
         expect(response).toBeInstanceOf(Object);
     }));
-    test('responds to PUT /media/:id', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to PUT /users/:id', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let response_json = "";
         // mock the send function
@@ -123,15 +123,15 @@ describe('Users', () => {
         // mock the request object
         const req = {
             params: {
-                id: temp_media_id
+                id: temp_user_id
             },
             body: {
-                name: "Test Media"
+                name: "Test User"
             }
         };
         // mock the response
         const res = {
-            media: null,
+            user: null,
             setHeader: jest.fn(),
             status: jest.fn().mockReturnValue({
                 send: send
@@ -139,7 +139,7 @@ describe('Users', () => {
             send: send
         };
         // call the function
-        yield (0, goals_1.updateGoal)(req, res);
+        yield (0, users_1.updateUser)(req, res);
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
@@ -148,7 +148,7 @@ describe('Users', () => {
         let response = JSON.parse(response_json);
         expect(response).toBeInstanceOf(Object);
     }));
-    test('responds to DELETE /media/:id', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to DELETE /users/:id', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let response_json = "";
         // mock the send function
@@ -158,7 +158,7 @@ describe('Users', () => {
         // mock the request object
         const req = {
             params: {
-                id: temp_media_id
+                id: temp_user_id
             }
         };
         // mock the response
@@ -171,12 +171,12 @@ describe('Users', () => {
             send: send
         };
         // call the function
-        yield (0, goals_1.deleteGoal)(req, res);
+        yield (0, users_1.deleteUser)(req, res);
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
         expect(send).toHaveBeenCalled();
-        // check that one media was deleted
+        // check that one user was deleted
         let response = JSON.parse(response_json);
         expect(response).toBe(1);
     }));
