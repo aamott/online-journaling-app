@@ -15,83 +15,85 @@ exports.deleteUser = exports.updateUser = exports.addUser = exports.getUser = ex
  */
 const mongodb_1 = require("mongodb");
 const mongodb = require('../db/connect');
-// filler data for testing
-const fillerUsers = [
-    {
-        _id: new mongodb_1.ObjectId(1),
-        name: 'John Doe',
-        entry_ids: [
-            {
-                _id: new mongodb_1.ObjectId(1),
-                date_created: new Date(),
-                title: 'My first entry',
-            },
-            {
-                _id: new mongodb_1.ObjectId(2),
-                date_created: new Date(),
-                title: 'My second entry',
-            }
-        ],
-        goal_ids: [
-            {
-                _id: new mongodb_1.ObjectId(1),
-            },
-            {
-                _id: new mongodb_1.ObjectId(2),
-            }
-        ],
-        media_ids: [
-            {
-                _id: new mongodb_1.ObjectId(1),
-                date_added: new Date()
-            },
-            {
-                _id: new mongodb_1.ObjectId(2),
-                date_added: new Date()
-            }
-        ]
-    },
-    {
-        _id: new mongodb_1.ObjectId(2),
-        name: 'Jane Doe',
-        entry_ids: [
-            {
-                _id: new mongodb_1.ObjectId(3),
-                date_created: new Date(),
-                title: 'My first entry',
-            },
-            {
-                _id: new mongodb_1.ObjectId(4),
-                date_created: new Date(),
-                title: 'My second entry',
-            }
-        ],
-        goal_ids: [
-            {
-                _id: new mongodb_1.ObjectId(3),
-            },
-            {
-                _id: new mongodb_1.ObjectId(4),
-            }
-        ],
-        media_ids: [
-            {
-                _id: new mongodb_1.ObjectId(3),
-                date_added: new Date()
-            },
-            {
-                _id: new mongodb_1.ObjectId(4),
-                date_added: new Date()
-            }
-        ]
-    }
-];
+// // filler data for testing
+// const fillerUsers = [
+//     {
+//         _id: new ObjectId(1),
+//         name: 'John Doe',
+//         entry_ids: [
+//             {
+//                 _id: new ObjectId(1),
+//                 date_created: new Date(),
+//                 title: 'My first entry',
+//             },
+//             {
+//                 _id: new ObjectId(2),
+//                 date_created: new Date(),
+//                 title: 'My second entry',
+//             }
+//         ],
+//         goal_ids: [
+//             {
+//                 _id: new ObjectId(1),
+//             },
+//             {
+//                 _id: new ObjectId(2),
+//             }
+//         ],
+//         media_ids: [
+//             {
+//                 _id: new ObjectId(1),
+//                 date_added: new Date()
+//             },
+//             {
+//                 _id: new ObjectId(2),
+//                 date_added: new Date()
+//             }
+//         ]
+//     },
+//     {
+//         _id: new ObjectId(2),
+//         name: 'Jane Doe',
+//         entry_ids: [
+//             {
+//                 _id: new ObjectId(3),
+//                 date_created: new Date(),
+//                 title: 'My first entry',
+//             },
+//             {
+//                 _id: new ObjectId(4),
+//                 date_created: new Date(),
+//                 title: 'My second entry',
+//             }
+//         ],
+//         goal_ids: [
+//             {
+//                 _id: new ObjectId(3),
+//             },
+//             {
+//                 _id: new ObjectId(4),
+//             }
+//         ],
+//         media_ids: [
+//             {
+//                 _id: new ObjectId(3),
+//                 date_added: new Date()
+//             },
+//             {
+//                 _id: new ObjectId(4),
+//                 date_added: new Date()
+//             }
+//         ]
+//     }
+// ];
 // GET /users
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify(fillerUsers));
+        // fetch the users from mongodb
+        const mongodb = res.locals.mongodb;
+        const users = yield mongodb.getDb().db().collection('users').find().toArray();
+        res.status(200).send(JSON.stringify(users));
     }
     catch (err) {
         res.status(500).send(err);
@@ -100,10 +102,12 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getAllUsers = getAllUsers;
 // GET /users/:id
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let user = fillerUsers.find((user) => user._id.toString() === req.params.id);
+        // fetch the user from mongodb
+        const mongodb = res.locals.mongodb;
+        const user_id = new mongodb_1.ObjectId(req.params.id);
+        const user = yield mongodb.getDb().db().collection('users').findOne({ _id: user_id });
         res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
@@ -116,15 +120,16 @@ const addUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the user to test data
     try {
         res.setHeader('Content-Type', 'application/json');
+        const mongodb = res.locals.mongodb;
         let newUser = {
-            _id: new mongodb_1.ObjectId(),
             name: req.body.name,
+            username: req.body.username,
             entry_ids: [],
             goal_ids: [],
             media_ids: []
         };
-        fillerUsers.push(newUser);
-        res.status(200).send(JSON.stringify(newUser._id));
+        const result = yield mongodb.getDb().db().collection('users').insertOne(newUser);
+        res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
         res.status(500).send(err);
@@ -136,13 +141,18 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // update the user in test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let user = fillerUsers.find((user) => user._id.toString() === req.params.id);
+        // get the user from mongodb
+        const mongodb = res.locals.mongodb;
+        const user_id = new mongodb_1.ObjectId(req.params.id);
+        const user = yield mongodb.getDb().db().collection('users').findOne({ _id: user_id });
         // return 404 if user not found
         if (!user) {
             res.status(404).send('User not found');
             return;
         }
-        user.name = req.body.name || user.name;
+        // update the user
+        user.name = req.body.name;
+        user.username = req.body.username;
         res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
@@ -155,15 +165,18 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // delete the user from test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let user = fillerUsers.find((user) => user._id.toString() === req.params.id);
+        // get the user from mongodb
+        const mongodb = res.locals.mongodb;
+        const user_id = new mongodb_1.ObjectId(req.params.id);
+        const user = yield mongodb.getDb().db().collection('users').findOne({ _id: user_id });
         // return 404 if user not found
         if (!user) {
             res.status(404).send('User not found');
             return;
         }
-        let index = fillerUsers.indexOf(user);
-        fillerUsers.splice(index, 1);
-        res.status(200).send(JSON.stringify(1)); // return number of users deleted
+        // delete the user
+        const result = yield mongodb.getDb().db().collection('users').deleteOne({ _id: user_id });
+        res.status(200).send(JSON.stringify(result));
     }
     catch (err) {
         res.status(500).send(err);
