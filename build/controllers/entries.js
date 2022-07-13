@@ -10,54 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEntry = exports.updateEntry = exports.addEntry = exports.getEntry = exports.getAllEntries = void 0;
-/******************
- * ENTRIES CONTROLLER
- */
 const mongodb_1 = require("mongodb");
 const mongodb = require('../db/connect');
-// filler data for testing
-const fillerEntries = [
-    {
-        _id: new mongodb_1.ObjectId(1),
-        date_created: new Date(),
-        date_updated: new Date(),
-        date_deleted: null,
-        location: 'Google maps readable address, plus code, or lat/long',
-        tags: ['tag1', 'tag2', 'tag3'],
-        entry: 'Some really long <i>html<i> formatted text. Or Markdown... your choice.',
-        media_ids: [
-            new mongodb_1.ObjectId(1),
-            new mongodb_1.ObjectId(2),
-        ],
-        goal_ids: [
-            new mongodb_1.ObjectId(1),
-            new mongodb_1.ObjectId(2),
-        ],
-    },
-    {
-        _id: new mongodb_1.ObjectId(2),
-        location: null,
-        tags: ['tag1', 'tag2', 'tag3'],
-        entry: 'Some really long <i>html<i> formatted text. Or Markdown... your choice.',
-        date_created: new Date(),
-        date_updated: new Date(),
-        date_deleted: null,
-        media_ids: [
-            new mongodb_1.ObjectId(1),
-            new mongodb_1.ObjectId(2),
-        ],
-        goal_ids: [
-            new mongodb_1.ObjectId(1),
-            new mongodb_1.ObjectId(2),
-        ],
-    },
-];
 // GET /entries
 const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify(fillerEntries));
+        const mongodb = req.locals.mongodb;
+        const entries = yield mongodb.getDb().db().collection('entries').find().toArray();
+        res.status(200).send(JSON.stringify(entries));
     }
     catch (err) {
         res.status(500).send(err);
@@ -66,7 +27,6 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.getAllEntries = getAllEntries;
 // GET /entries/:id
 const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // return test data
     // get the entry ID from the URL
     const entryId = req.params.id;
     if (!entryId) {
@@ -79,7 +39,8 @@ const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     try {
         res.setHeader('Content-Type', 'application/json');
-        let entry = fillerEntries.find((entry) => entry._id.toString() === entryId);
+        const mongodb = req.locals.mongodb;
+        const entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(entryId) });
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send('Entry not found');
@@ -109,38 +70,20 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(400).send('No entry provided');
             return;
         }
-        // Make sure media_ids is an Array of ObjectIds
-        let media_ids = req.body.media_ids || null;
-        if (media_ids && !Array.isArray(media_ids)) {
-            media_ids = [media_ids];
-        }
-        let media_object_ids = [];
-        if (media_ids) {
-            media_object_ids = media_ids.map((id) => new mongodb_1.ObjectId(id));
-        }
-        // Make sure goal_ids is an Array of ObjectIds
-        let goal_ids = req.body.goal_ids || null;
-        if (goal_ids && !Array.isArray(goal_ids)) {
-            goal_ids = [goal_ids];
-        }
-        let goal_object_ids = [];
-        if (goal_ids) {
-            goal_object_ids = goal_ids.map((id) => new mongodb_1.ObjectId(id));
-        }
         let newEntry = {
-            _id: new mongodb_1.ObjectId(),
             date_created: new Date(),
             date_updated: new Date(),
             date_deleted: null,
             location: location,
             tags: tags,
             entry: entry,
-            media_ids: media_object_ids,
-            goal_ids: goal_object_ids
+            media_ids: [],
+            goal_ids: []
         };
-        fillerEntries.push(newEntry);
-        newEntry._id = new mongodb_1.ObjectId(fillerEntries.length);
-        res.status(200).send(JSON.stringify(newEntry._id));
+        // add the entry to the database
+        const mongodb = req.locals.mongodb;
+        const result = yield mongodb.getDb().db().collection('entries').insertOne(newEntry);
+        res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
         res.status(500).send(err);
@@ -152,30 +95,39 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.setHeader('Content-Type', 'application/json');
     // update the entry
     try {
-        let entry = fillerEntries.find((entry) => entry._id.toString() === req.params.id);
+        const mongodb = req.locals.mongodb;
+        let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send('Entry not found');
             return;
+        }
+        // convert media_ids to a list of ObjectIds
+        let media_ids = req.body.media_ids;
+        if (media_ids && !Array.isArray(media_ids)) {
+            media_ids = [media_ids];
+        }
+        if (media_ids) {
+            media_ids = media_ids.map((id) => new mongodb_1.ObjectId(id));
+        }
+        // convert goal_ids to a list of ObjectIds
+        let goal_ids = req.body.goal_ids;
+        if (goal_ids && !Array.isArray(goal_ids)) {
+            goal_ids = [goal_ids];
+        }
+        if (goal_ids) {
+            goal_ids = goal_ids.map((id) => new mongodb_1.ObjectId(id));
         }
         // update the entry
         entry.entry = req.body.entry || entry.entry;
         entry.date_updated = new Date();
         entry.location = req.body.location || entry.location;
         entry.tags = req.body.tags || entry.tags;
-        // Loop through media. If an id doesn't exist in the entry's media, add it.
-        for (let media_id of req.body.media_ids) {
-            if (!entry.media_ids.includes(media_id)) {
-                entry.media_ids.push(media_id);
-            }
-        }
-        // Loop through goals. If an id doesn't exist in the entry's goals, add it.
-        for (let goal_id of req.body.goal_ids) {
-            if (!entry.goal_ids.includes(goal_id)) {
-                entry.goal_ids.push(goal_id);
-            }
-        }
-        res.status(200).send(JSON.stringify(entry));
+        entry.media_ids = req.body.media_ids || entry.media_ids;
+        entry.goal_ids = req.body.goal_ids || entry.goal_ids;
+        // update the entry in the database
+        const result = yield mongodb.getDb().db().collection('entries').updateOne({ _id: new mongodb_1.ObjectId(req.params.id) }, entry);
+        res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
         res.status(500).send(err);
@@ -188,15 +140,17 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // delete the entry from test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let entry = fillerEntries.find((entry) => entry._id.toString() === req.params.id);
+        const mongodb = req.locals.mongodb;
+        let entry_id = new mongodb_1.ObjectId(req.params.id);
+        let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send('Entry not found');
             return;
         }
-        let index = fillerEntries.indexOf(entry);
-        fillerEntries.splice(index, 1);
-        res.status(200).send(JSON.stringify(1)); // return number of entries deleted
+        // delete the entry from the database
+        const result = yield mongodb.getDb().db().collection('entries').deleteOne({ _id: entry_id });
+        res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
         res.status(500).send(err);

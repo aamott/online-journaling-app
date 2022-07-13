@@ -14,78 +14,6 @@ exports.deleteUser = exports.updateUser = exports.addUser = exports.getUser = ex
  * USERS CONTROLLER
  */
 const mongodb_1 = require("mongodb");
-const mongodb = require('../db/connect');
-// // filler data for testing
-// const fillerUsers = [
-//     {
-//         _id: new ObjectId(1),
-//         name: 'John Doe',
-//         entry_ids: [
-//             {
-//                 _id: new ObjectId(1),
-//                 date_created: new Date(),
-//                 title: 'My first entry',
-//             },
-//             {
-//                 _id: new ObjectId(2),
-//                 date_created: new Date(),
-//                 title: 'My second entry',
-//             }
-//         ],
-//         goal_ids: [
-//             {
-//                 _id: new ObjectId(1),
-//             },
-//             {
-//                 _id: new ObjectId(2),
-//             }
-//         ],
-//         media_ids: [
-//             {
-//                 _id: new ObjectId(1),
-//                 date_added: new Date()
-//             },
-//             {
-//                 _id: new ObjectId(2),
-//                 date_added: new Date()
-//             }
-//         ]
-//     },
-//     {
-//         _id: new ObjectId(2),
-//         name: 'Jane Doe',
-//         entry_ids: [
-//             {
-//                 _id: new ObjectId(3),
-//                 date_created: new Date(),
-//                 title: 'My first entry',
-//             },
-//             {
-//                 _id: new ObjectId(4),
-//                 date_created: new Date(),
-//                 title: 'My second entry',
-//             }
-//         ],
-//         goal_ids: [
-//             {
-//                 _id: new ObjectId(3),
-//             },
-//             {
-//                 _id: new ObjectId(4),
-//             }
-//         ],
-//         media_ids: [
-//             {
-//                 _id: new ObjectId(3),
-//                 date_added: new Date()
-//             },
-//             {
-//                 _id: new ObjectId(4),
-//                 date_added: new Date()
-//             }
-//         ]
-//     }
-// ];
 // GET /users
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -108,6 +36,11 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const mongodb = req.locals.mongodb;
         const user_id = new mongodb_1.ObjectId(req.params.id);
         const user = yield mongodb.getDb().db().collection('users').findOne({ _id: user_id });
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
         res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
@@ -153,7 +86,9 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // update the user
         user.name = req.body.name;
         user.username = req.body.username;
-        res.status(200).send(JSON.stringify(user));
+        const result = yield mongodb.getDb().db().collection('users').updateOne({ _id: user_id }, user);
+        res.status(200).send(JSON.stringify(result));
+        res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
         res.status(500).send(err);
@@ -176,7 +111,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         // delete the user
         const result = yield mongodb.getDb().db().collection('users').deleteOne({ _id: user_id });
-        res.status(200).send(JSON.stringify(result));
+        res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
         res.status(500).send(err);
