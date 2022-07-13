@@ -2,7 +2,6 @@
  * USERS CONTROLLER
  */
 import { ObjectId } from 'mongodb';
-const mongodb = require('../db/connect');
 
 // // filler data for testing
 // const fillerUsers = [
@@ -82,7 +81,7 @@ const getAllUsers = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         // fetch the users from mongodb
-        const mongodb = res.locals.mongodb;
+        const mongodb = req.locals.mongodb;
         const users = await mongodb.getDb().db().collection('users').find().toArray();
         
         res.status(200).send(JSON.stringify(users));
@@ -98,7 +97,7 @@ const getUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         // fetch the user from mongodb
-        const mongodb = res.locals.mongodb;
+        const mongodb = req.locals.mongodb;
         const user_id = new ObjectId(req.params.id);
         const user = await mongodb.getDb().db().collection('users').findOne({ _id: user_id });
         res.status(200).send(JSON.stringify(user));
@@ -116,7 +115,7 @@ const addUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
 
-        const mongodb = res.locals.mongodb;
+        const mongodb = req.locals.mongodb;
 
         let newUser = {
             name: req.body.name,
@@ -141,7 +140,7 @@ const updateUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         // get the user from mongodb
-        const mongodb = res.locals.mongodb;
+        const mongodb = req.locals.mongodb;
         const user_id = new ObjectId(req.params.id);
         const user = await mongodb.getDb().db().collection('users').findOne({ _id: user_id });
         
@@ -170,7 +169,7 @@ const deleteUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         // get the user from mongodb
-        const mongodb = res.locals.mongodb;
+        const mongodb = req.locals.mongodb;
         const user_id = new ObjectId(req.params.id);
         const user = await mongodb.getDb().db().collection('users').findOne({ _id: user_id });
 
