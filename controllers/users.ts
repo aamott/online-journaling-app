@@ -2,80 +2,6 @@
  * USERS CONTROLLER
  */
 import { ObjectId } from 'mongodb';
-
-// // filler data for testing
-// const fillerUsers = [
-//     {
-//         _id: new ObjectId(1),
-//         name: 'John Doe',
-//         entry_ids: [
-//             {
-//                 _id: new ObjectId(1),
-//                 date_created: new Date(),
-//                 title: 'My first entry',
-//             },
-//             {
-//                 _id: new ObjectId(2),
-//                 date_created: new Date(),
-//                 title: 'My second entry',
-//             }
-//         ],
-//         goal_ids: [
-//             {
-//                 _id: new ObjectId(1),
-//             },
-//             {
-//                 _id: new ObjectId(2),
-//             }
-//         ],
-//         media_ids: [
-//             {
-//                 _id: new ObjectId(1),
-//                 date_added: new Date()
-//             },
-//             {
-//                 _id: new ObjectId(2),
-//                 date_added: new Date()
-//             }
-//         ]
-//     },
-//     {
-//         _id: new ObjectId(2),
-//         name: 'Jane Doe',
-//         entry_ids: [
-//             {
-//                 _id: new ObjectId(3),
-//                 date_created: new Date(),
-//                 title: 'My first entry',
-//             },
-//             {
-//                 _id: new ObjectId(4),
-//                 date_created: new Date(),
-//                 title: 'My second entry',
-//             }
-//         ],
-//         goal_ids: [
-//             {
-//                 _id: new ObjectId(3),
-//             },
-//             {
-//                 _id: new ObjectId(4),
-//             }
-//         ],
-//         media_ids: [
-//             {
-//                 _id: new ObjectId(3),
-//                 date_added: new Date()
-//             },
-//             {
-//                 _id: new ObjectId(4),
-//                 date_added: new Date()
-//             }
-//         ]
-//     }
-// ];
-
-
 // GET /users
 const getAllUsers = async (req: any, res: any) => {
     try {
@@ -100,6 +26,12 @@ const getUser = async (req: any, res: any) => {
         const mongodb = req.locals.mongodb;
         const user_id = new ObjectId(req.params.id);
         const user = await mongodb.getDb().db().collection('users').findOne({ _id: user_id });
+
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
         res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
@@ -153,8 +85,10 @@ const updateUser = async (req: any, res: any) => {
         // update the user
         user.name = req.body.name;
         user.username = req.body.username;
+        const result = await mongodb.getDb().db().collection('users').updateOne({ _id: user_id }, user);
+        res.status(200).send(JSON.stringify(result));
 
-        res.status(200).send(JSON.stringify(user));
+        res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
         res.status(500).send(err);
@@ -181,7 +115,7 @@ const deleteUser = async (req: any, res: any) => {
 
         // delete the user
         const result = await mongodb.getDb().db().collection('users').deleteOne({ _id: user_id });
-        res.status(200).send(JSON.stringify(result));
+        res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
         res.status(500).send(err);
