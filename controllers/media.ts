@@ -85,9 +85,9 @@ const addMedia = async (req: {
     body: {
         owner_id: any;
         location: string | null;
-        tags: Array<string>;
+        tags: string[],
         media_uri: string;
-        entry_ids: Array<string> | null;
+        entry_ids: string[] | null;
     };
 }, res: any) => {
     // add the media to test data
