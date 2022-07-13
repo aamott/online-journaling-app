@@ -50,9 +50,19 @@ describe('Users', () => {
         });
         // mock the request object
         const req = {
-            body: {
-                name: "Test Goal"
-            }
+            _id: "new ObjectId(8)",
+            name: 'Second Goal',
+            createdDate: new Date(),
+            dueDate: new Date(),
+            deletedDate: new Date(),
+            entry_ids: [
+                "new ObjectId(9)",
+                "new ObjectId(0)",
+            ],
+            media_ids: [
+                "new ObjectId(9)",
+                "new ObjectId(0)",
+            ],
         };
         // mock the response
         const res = {
