@@ -10,6 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteGoal = exports.updateGoal = exports.addGoal = exports.getGoal = exports.getAllGoals = void 0;
+/******************
+ * GOALS CONTROLLER
+ */
+const mongodb_1 = require("mongodb");
 const mongodb = require('../db/connect');
 // filler data for testing
 const fillerGoals = [
@@ -23,7 +27,7 @@ const fillerGoals = [
             "new ObjectId(9)",
             "new ObjectId(0)",
         ],
-        media_ids: [
+        goal_ids: [
             "new ObjectId(9)",
             "new ObjectId(0)",
         ],
@@ -38,7 +42,7 @@ const fillerGoals = [
             "new ObjectId(9)",
             "new ObjectId(0)",
         ],
-        media_ids: [
+        goal_ids: [
             "new ObjectId(9)",
             "new ObjectId(0)",
         ],
@@ -49,7 +53,8 @@ const getAllGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify(fillerGoals));
+        const goals = yield mongodb.getDb().db().collection('goals').find().toArray();
+        res.status(200).send(JSON.stringify(goals));
     }
     catch (err) {
         res.status(500).send(err);
@@ -61,14 +66,29 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify(fillerGoals[0]));
+        const goalId = new mongodb_1.ObjectId(req.params.id);
+        if (!goalId) {
+            res.status(400).send('No goal ID provided');
+            return;
+        }
+        if (!mongodb_1.ObjectId.isValid(goalId)) {
+            res.status(400).send('Invalid goal ID');
+            return;
+        }
+        const goal = yield mongodb.getDb().db().collection('goal').find(goalId).toArray();
+        // return 404 if goal not found
+        if (!goal) {
+            res.status(404).send('Goal not found');
+            return;
+        }
+        res.status(200).send(JSON.stringify(goal));
     }
     catch (err) {
         res.status(500).send(err);
     }
 });
 exports.getGoal = getGoal;
-// POST /users
+// POST /goals
 const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the goal to test data
     try {
@@ -83,7 +103,7 @@ const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 "new ObjectId(9)",
                 "new ObjectId(0)",
             ],
-            media_ids: [
+            goal_ids: [
                 "new ObjectId(9)",
                 "new ObjectId(0)",
             ],
@@ -126,7 +146,8 @@ const deleteGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // delete the goal from test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let goal = fillerGoals.find((goal) => goal._id.toString() === req.params.id);
+        const goalId = req.params.id;
+        const goal = yield mongodb.getDb().db().collection('goals').findOne({ _id: goalId });
         // return 404 if goal not found
         if (!goal) {
             res.status(404).send('Goal not found');
