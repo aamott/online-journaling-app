@@ -1,7 +1,7 @@
 /******************
  * GOALS CONTROLLER
  */
- import { ObjectId } from 'mongodb';
+ import { MongoDecompressionError, ObjectId } from 'mongodb';
  const mongodb = require('../db/connect');
  
  // filler data for testing
@@ -16,7 +16,7 @@
            "new ObjectId(9)",
            "new ObjectId(0)",
         ],
-        media_ids:  [
+        goal_ids:  [
            "new ObjectId(9)",
            "new ObjectId(0)",
         ],
@@ -31,7 +31,7 @@
             "new ObjectId(9)",
             "new ObjectId(0)",
          ],
-         media_ids:  [
+         goal_ids:  [
             "new ObjectId(9)",
             "new ObjectId(0)",
          ],
@@ -44,7 +44,8 @@
      // return test data
      try {
          res.setHeader('Content-Type', 'application/json')
-         res.status(200).send(JSON.stringify(fillerGoals));
+         const goals = await mongodb.getDb().db().collection('goals').find().toArray();
+         res.status(200).send(JSON.stringify(goals));
      }
      catch (err) {
          res.status(500).send(err);
@@ -56,8 +57,28 @@
  const getGoal = async (req: any, res: any) => {
      // return test data
      try {
-         res.setHeader('Content-Type', 'application/json')
-         res.status(200).send(JSON.stringify(fillerGoals[0]));
+        res.setHeader('Content-Type', 'application/json');
+        const goalId = new ObjectId(req.params.id);
+
+        if (!goalId) {
+            res.status(400).send('No goal ID provided');
+            return;
+        }
+    
+        if (!ObjectId.isValid(goalId)) {
+            res.status(400).send('Invalid goal ID');
+            return;
+        }
+
+        const goal = await mongodb.getDb().db().collection('goal').find(goalId).toArray();
+
+        // return 404 if goal not found
+        if (!goal) {
+            res.status(404).send('Goal not found');
+            return;
+        }
+
+        res.status(200).send(JSON.stringify(goal));
      }
      catch (err) {
          res.status(500).send(err);
@@ -65,7 +86,7 @@
  };
  
  
- // POST /users
+ // POST /goals
  const addGoal = async (req: any, res: any) => {
      // add the goal to test data
      try {
@@ -81,7 +102,7 @@
                    "new ObjectId(9)",
                    "new ObjectId(0)",
                 ],
-                media_ids:  [
+                goal_ids:  [
                    "new ObjectId(9)",
                    "new ObjectId(0)",
                 ],
@@ -132,8 +153,8 @@
      // delete the goal from test data
      try {
          res.setHeader('Content-Type', 'application/json')
-         let goal = fillerGoals.find( (goal) => goal._id.toString() === req.params.id);
-         
+         const goalId = req.params.id;
+         const goal = await mongodb.getDb().db().collection('goals').findOne({_id:goalId});
          // return 404 if goal not found
          if (!goal) {
              res.status(404).send('Goal not found');
