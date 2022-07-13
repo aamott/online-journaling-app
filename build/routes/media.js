@@ -16,8 +16,6 @@ router.get('/', media.getAllMedia);
 router.get('/:id', media.getMedia);
 // Add a new media
 router.post('/', (0, express_openid_connect_1.requiresAuth)(), media.addMedia);
-// Update a media
-// router.put('/:id', requiresAuth(), media.updateMedia);
 // Delete a media
 router.delete('/:id', (0, express_openid_connect_1.requiresAuth)(), media.deleteMedia);
 module.exports = router;

@@ -14,46 +14,14 @@ exports.deleteGoal = exports.updateGoal = exports.addGoal = exports.getGoal = ex
  * GOALS CONTROLLER
  */
 const mongodb_1 = require("mongodb");
-const mongodb = require('../db/connect');
-// filler data for testing
-const fillerGoals = [
-    {
-        name: 'Second Goal',
-        _id: "new ObjectId(1)",
-        createdDate: new Date(),
-        dueDate: new Date(),
-        deletedDate: new Date(),
-        entry_ids: [
-            "new ObjectId(9)",
-            "new ObjectId(0)",
-        ],
-        goal_ids: [
-            "new ObjectId(9)",
-            "new ObjectId(0)",
-        ],
-    },
-    {
-        _id: "new ObjectId(8)",
-        name: 'Second Goal',
-        createdDate: new Date(),
-        dueDate: new Date(),
-        deletedDate: new Date(),
-        entry_ids: [
-            "new ObjectId(9)",
-            "new ObjectId(0)",
-        ],
-        goal_ids: [
-            "new ObjectId(9)",
-            "new ObjectId(0)",
-        ],
-    }
-];
 // GET /goals
 const getAllGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const goals = yield mongodb.getDb().db().collection('goals').find().toArray();
+        const mongodb = req.locals.mongodb;
+        const goalsCollection = mongodb.getDb().db().collection('goals');
+        const goals = yield goalsCollection.find({}).toArray();
         res.status(200).send(JSON.stringify(goals));
     }
     catch (err) {
@@ -66,21 +34,9 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const goalId = new mongodb_1.ObjectId(req.params.id);
-        if (!goalId) {
-            res.status(400).send('No goal ID provided');
-            return;
-        }
-        if (!mongodb_1.ObjectId.isValid(goalId)) {
-            res.status(400).send('Invalid goal ID');
-            return;
-        }
-        const goal = yield mongodb.getDb().db().collection('goal').find(goalId).toArray();
-        // return 404 if goal not found
-        if (!goal) {
-            res.status(404).send('Goal not found');
-            return;
-        }
+        const mongodb = req.locals.mongodb;
+        const goalsCollection = mongodb.getDb().db().collection('goals');
+        const goal = yield goalsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         res.status(200).send(JSON.stringify(goal));
     }
     catch (err) {
@@ -88,28 +44,23 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getGoal = getGoal;
-// POST /goals
+// POST /users
 const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the goal to test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let newGoal = {
-            _id: "new ObjectId(8)",
+        const mongodb = req.locals.mongodb;
+        const goalsCollection = mongodb.getDb().db().collection('goals');
+        let new_goal = {
             name: 'Second Goal',
             createdDate: new Date(),
             dueDate: new Date(),
-            deletedDate: new Date(),
-            entry_ids: [
-                "new ObjectId(9)",
-                "new ObjectId(0)",
-            ],
-            goal_ids: [
-                "new ObjectId(9)",
-                "new ObjectId(0)",
-            ],
+            deletedDate: null,
+            entry_ids: [],
+            media_ids: [],
         };
-        fillerGoals.push(newGoal);
-        res.status(200).send(JSON.stringify(newGoal._id));
+        const result = yield goalsCollection.insertOne(new_goal);
+        res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
         res.status(500).send(err);
@@ -121,20 +72,24 @@ const updateGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // update the goal in test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let goal = fillerGoals.find((goal) => goal._id.toString() === req.params.id);
+        const mongodb = req.locals.mongodb;
+        const goalsCollection = mongodb.getDb().db().collection('goals');
+        const goal = yield goalsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 404 if user not found
         if (!goal) {
             res.status(404).send('User not found');
             return;
         }
         goal.name = req.body.name || goal.name;
-        // Loop through goals. If an entry doesn't exist in the user's goals, add it.
-        for (let entry of req.body.goal_ids) {
-            if (!req.body.goal_ids.find((entry_id) => entry_id._id.toString() === entry._id.toString())) {
-                goal.entry_ids.push(entry);
-            }
+        goal.dueDate = req.body.dueDate || goal.dueDate;
+        // if the user sets deletedDate to null, it will be deleted, but if the user doesn't set it, it will be left alone
+        if (req.body.deletedDate) {
+            goal.deletedDate = req.body.deletedDate;
         }
-        res.status(200).send(JSON.stringify(goal));
+        goal.entry_ids = req.body.entry_ids || goal.entry_ids;
+        goal.media_ids = req.body.media_ids || goal.media_ids;
+        const result = yield goalsCollection.updateOne({ _id: new mongodb_1.ObjectId(req.params.id) }, goal);
+        res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
         res.status(500).send(err);
@@ -153,9 +108,8 @@ const deleteGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(404).send('Goal not found');
             return;
         }
-        let index = fillerGoals.indexOf(goal);
-        fillerGoals.splice(index, 1);
-        res.status(200).send(JSON.stringify(1)); // return number of users deleted
+        const result = yield mongodb.getDb().db().collection('goals').deleteOne({ _id: goalId });
+        res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
         res.status(500).send(err);
