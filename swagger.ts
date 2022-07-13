@@ -12,7 +12,7 @@ const doc = {
   securityDefinitions: {
     oAuthSample: {
       type: 'oauth2',
-      authorizationUrl: 'http://online-journey.herokuapp.com/login',
+      authorizationUrl: 'https://online-journey.herokuapp.com/login',
       flow: 'implicit',
       scopes: {
         read_data: 'read your data',

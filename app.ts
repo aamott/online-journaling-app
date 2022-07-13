@@ -14,7 +14,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 const config = {
-  authRequired: false, // TODO: set to false when done
+  authRequired: false,
   auth0Logout: true,
   secret: process.env.SECRET,
   baseURL: process.env.BASE_URL,
@@ -38,6 +38,7 @@ mongodb.initDb((err: any, mongodb: any) => {
   if (err) {
     console.log(err);
   } else {
+
     app.listen(port);
     console.log(`Connected to DB and listening on ${port}`);
   }

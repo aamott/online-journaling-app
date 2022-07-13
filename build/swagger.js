@@ -5,14 +5,14 @@ const doc = {
         title: 'Online Journal',
         description: 'A web app for journaling'
     },
-    host: 'online-journey.herokuapp.com',
-    // host: "localhost:8080",
-    schemes: ['https'],
-    // schemes: ['http'],
+    // host: 'online-journey.herokuapp.com',
+    host: "localhost:8080",
+    // schemes: ['https'],
+    schemes: ['http'],
     securityDefinitions: {
         oAuthSample: {
             type: 'oauth2',
-            authorizationUrl: 'http://online-journey.herokuapp.com/login',
+            authorizationUrl: 'https://online-journey.herokuapp.com/login',
             flow: 'implicit',
             scopes: {
                 read_data: 'read your data',

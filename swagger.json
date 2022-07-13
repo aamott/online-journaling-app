@@ -5,15 +5,15 @@
     "description": "A web app for journaling",
     "version": "1.0.0"
   },
-  "host": "online-journey.herokuapp.com",
+  "host": "localhost:8080",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "securityDefinitions": {
     "oAuthSample": {
       "type": "oauth2",
-      "authorizationUrl": "http://online-journey.herokuapp.com/login",
+      "authorizationUrl": "https://online-journey.herokuapp.com/login",
       "flow": "implicit",
       "scopes": {
         "read_data": "read your data",
@@ -79,6 +79,9 @@
               "properties": {
                 "name": {
                   "example": "any"
+                },
+                "username": {
+                  "example": "any"
                 }
               }
             }
@@ -142,6 +145,9 @@
               "type": "object",
               "properties": {
                 "name": {
+                  "example": "any"
+                },
+                "username": {
                   "example": "any"
                 }
               }
