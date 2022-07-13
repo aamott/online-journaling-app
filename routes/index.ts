@@ -3,6 +3,16 @@
  */
 import express from 'express';
 const router = express.Router();
+const mongodb = require('../db/connect');
+
+
+/********************
+ * MongoDB
+ */
+router.use((req: any, res: any, next: any) => {
+    req.locals.mongodb = mongodb;
+    next();
+});
 
 /********************
  * Routes

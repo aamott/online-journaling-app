@@ -10,8 +10,80 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
+// const mongodb = require('../db/connect');
 const users_1 = require("../../controllers/users");
-let temp_user_id = new mongodb_1.ObjectId(1);
+let temp_user_id = new mongodb_1.ObjectId(1).toString();
+// filler data for testing
+const fillerUsers = [
+    {
+        _id: new mongodb_1.ObjectId(1),
+        name: 'John Doe',
+        entry_ids: [
+            {
+                _id: new mongodb_1.ObjectId(1),
+                date_created: new Date(),
+                title: 'My first entry',
+            },
+            {
+                _id: new mongodb_1.ObjectId(2),
+                date_created: new Date(),
+                title: 'My second entry',
+            }
+        ],
+        goal_ids: [
+            {
+                _id: new mongodb_1.ObjectId(1),
+            },
+            {
+                _id: new mongodb_1.ObjectId(2),
+            }
+        ],
+        media_ids: [
+            {
+                _id: new mongodb_1.ObjectId(1),
+                date_added: new Date()
+            },
+            {
+                _id: new mongodb_1.ObjectId(2),
+                date_added: new Date()
+            }
+        ]
+    },
+    {
+        _id: new mongodb_1.ObjectId(2),
+        name: 'Jane Doe',
+        entry_ids: [
+            {
+                _id: new mongodb_1.ObjectId(3),
+                date_created: new Date(),
+                title: 'My first entry',
+            },
+            {
+                _id: new mongodb_1.ObjectId(4),
+                date_created: new Date(),
+                title: 'My second entry',
+            }
+        ],
+        goal_ids: [
+            {
+                _id: new mongodb_1.ObjectId(3),
+            },
+            {
+                _id: new mongodb_1.ObjectId(4),
+            }
+        ],
+        media_ids: [
+            {
+                _id: new mongodb_1.ObjectId(3),
+                date_added: new Date()
+            },
+            {
+                _id: new mongodb_1.ObjectId(4),
+                date_added: new Date()
+            }
+        ]
+    }
+];
 describe('Users', () => {
     test('responds to GET /users', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
@@ -29,7 +101,31 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            find: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return fillerUsers.find(user => user._id.toString() === query._id.toString());
+                                                }
+                                                else {
+                                                    return fillerUsers;
+                                                }
+                                            }),
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, users_1.getAllUsers)(req, res);
@@ -61,7 +157,51 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            insertOne: jest.fn().mockImplementation((user) => {
+                                                return {
+                                                    insertedId: new mongodb_1.ObjectId(1)
+                                                };
+                                            }),
+                                            find: jest.fn().mockImplementation((query) => {
+                                                return fillerUsers.find(user => user._id.toString() === query._id.toString());
+                                            }),
+                                            updateOne: jest.fn().mockImplementation((query, update) => {
+                                                return {
+                                                    matchedCount: 1,
+                                                    modifiedCount: 1,
+                                                    upsertedId: new mongodb_1.ObjectId(1)
+                                                };
+                                            }),
+                                            deleteOne: jest.fn().mockImplementation((query) => {
+                                                return {
+                                                    deletedCount: 1
+                                                };
+                                            }),
+                                            deleteMany: jest.fn().mockImplementation((query) => {
+                                                return {
+                                                    deletedCount: 1
+                                                };
+                                            }),
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                return fillerUsers.find(user => user._id.toString() === query._id.toString());
+                                            })
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, users_1.addUser)(req, res);
@@ -102,7 +242,33 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                // return one mocked user for each query id, with ids matching the query
+                                                let users = [fillerUsers[0]];
+                                                query.forEach((_id) => {
+                                                    const user = fillerUsers[0];
+                                                    user._id = _id;
+                                                    users.push(user);
+                                                });
+                                                return users;
+                                            })
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, users_1.getUser)(req, res);

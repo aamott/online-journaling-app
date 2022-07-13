@@ -1,7 +1,83 @@
 import { ObjectId } from 'mongodb';
+// const mongodb = require('../db/connect');
 import {getAllUsers, getUser, addUser, updateUser, deleteUser} from '../../controllers/users';
 
-let temp_user_id = new ObjectId(1);
+let temp_user_id = new ObjectId(1).toString();
+
+
+// filler data for testing
+const fillerUsers = [
+    {
+        _id: new ObjectId(1),
+        name: 'John Doe',
+        entry_ids: [
+            {
+                _id: new ObjectId(1),
+                date_created: new Date(),
+                title: 'My first entry',
+            },
+            {
+                _id: new ObjectId(2),
+                date_created: new Date(),
+                title: 'My second entry',
+            }
+        ],
+        goal_ids: [
+            {
+                _id: new ObjectId(1),
+            },
+            {
+                _id: new ObjectId(2),
+            }
+        ],
+        media_ids: [
+            {
+                _id: new ObjectId(1),
+                date_added: new Date()
+            },
+            {
+                _id: new ObjectId(2),
+                date_added: new Date()
+            }
+        ]
+    },
+    {
+        _id: new ObjectId(2),
+        name: 'Jane Doe',
+        entry_ids: [
+            {
+                _id: new ObjectId(3),
+                date_created: new Date(),
+                title: 'My first entry',
+            },
+            {
+                _id: new ObjectId(4),
+                date_created: new Date(),
+                title: 'My second entry',
+            }
+        ],
+        goal_ids: [
+            {
+                _id: new ObjectId(3),
+            },
+            {
+                _id: new ObjectId(4),
+            }
+        ],
+        media_ids: [
+            {
+                _id: new ObjectId(3),
+                date_added: new Date()
+            },
+            {
+                _id: new ObjectId(4),
+                date_added: new Date()
+            }
+        ]
+    }
+];
+
+
 describe('Users', () => {
 
     test('responds to GET /users', async () => {
@@ -23,8 +99,23 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
-        };
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            find: jest.fn().mockImplementation((query: any) => {
+                                                if (query._id) {
+                                                    return fillerUsers.find(user => user._id.toString() === query._id.toString());
+                                                } else {
+                                                    return fillerUsers;
+                                                }
+                                            }),
+        }}}}}}}}}
 
         // call the function
         await getAllUsers(req, res);
@@ -63,7 +154,51 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            insertOne: jest.fn().mockImplementation((user: any) => {
+                                                return {
+                                                    insertedId: new ObjectId(1)
+                                                }
+                                            }),
+                                            find: jest.fn().mockImplementation((query: any) => {
+                                                return fillerUsers.find(user => user._id.toString() === query._id.toString());
+                                            }),
+                                            updateOne: jest.fn().mockImplementation((query: any, update: any) => {
+                                                return {
+                                                    matchedCount: 1,
+                                                    modifiedCount: 1,
+                                                    upsertedId: new ObjectId(1)
+                                                }
+                                            }),
+                                            deleteOne: jest.fn().mockImplementation((query: any) => {
+                                                return {
+                                                    deletedCount: 1
+                                                }
+                                            }),
+                                            deleteMany: jest.fn().mockImplementation((query: any) => {
+                                                return {
+                                                    deletedCount: 1
+                                                }
+                                            }),
+                                            findOne: jest.fn().mockImplementation((query: any) => {
+                                                return fillerUsers.find(user => user._id.toString() === query._id.toString());
+                                            })
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         };
 
         // call the function
@@ -114,8 +249,26 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
-        };
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query: any) => {
+                                                // return one mocked user for each query id, with ids matching the query
+                                                let users = [fillerUsers[0]];
+                                                query.forEach((_id: ObjectId) => {
+                                                    const user = fillerUsers[0];
+                                                    user._id = _id;
+                                                    users.push(user);
+                                                });
+                                                return users;
+                                            })
+        };}};}};}}}};
 
         // call the function
         await getUser(req, res);
