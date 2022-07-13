@@ -16,7 +16,7 @@ router.get('/:id', media.getMedia);
 router.post('/', requiresAuth(), media.addMedia);
 
 // Update a media
-router.put('/:id', requiresAuth(), media.updateMedia);
+// router.put('/:id', requiresAuth(), media.updateMedia);
 
 // Delete a media
 router.delete('/:id', requiresAuth(), media.deleteMedia);

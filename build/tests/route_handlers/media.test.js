@@ -117,44 +117,6 @@ describe('Media', () => {
         let response = JSON.parse(user_json);
         expect(response).toBeInstanceOf(Object);
     }));
-    test('responds to PUT /media/:id', () => __awaiter(void 0, void 0, void 0, function* () {
-        // create a variable to store the response
-        let response_json = "";
-        // mock the send function
-        const send = jest.fn().mockImplementation(() => {
-            response_json = send.mock.calls[0][0];
-        });
-        // mock the request object
-        const req = {
-            params: {
-                id: "Test Media ID"
-            },
-            body: {
-                location: "Somewhere",
-                tags: ['test'],
-                media_uri: "Media URI here",
-                entry_ids: ['MediaID']
-            }
-        };
-        // mock the response
-        const res = {
-            user: null,
-            setHeader: jest.fn(),
-            status: jest.fn().mockReturnValue({
-                send: send
-            }),
-            send: send
-        };
-        // call the function
-        yield (0, media_1.updateMedia)(req, res);
-        // check the response
-        expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(send).toHaveBeenCalled();
-        // check that the response was an ObjectId
-        let response = JSON.parse(response_json);
-        expect(response).toBeInstanceOf(Object);
-    }));
     test('responds to DELETE /media/:id', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let response_json = "";

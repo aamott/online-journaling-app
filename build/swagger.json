@@ -498,21 +498,6 @@
                     }
                 }
             },
-            "put": {
-                "tags": [
-                    "Media"
-                ],
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {}
-            },
             "delete": {
                 "tags": [
                     "Media"
