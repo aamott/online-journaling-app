@@ -390,7 +390,16 @@
                                 "name": {
                                     "example": "any"
                                 },
-                                "goal_ids": {
+                                "dueDate": {
+                                    "example": "any"
+                                },
+                                "deletedDate": {
+                                    "example": "any"
+                                },
+                                "entry_ids": {
+                                    "example": "any"
+                                },
+                                "media_ids": {
                                     "example": "any"
                                 }
                             }
