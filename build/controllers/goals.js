@@ -95,10 +95,6 @@ const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         user.id = user.sub;
-        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify('Invalid id'));
-            return;
-        }
         const mongodb = res.locals.mongodb;
         let new_goal = {
             owner_id: user.sub,

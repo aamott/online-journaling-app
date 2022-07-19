@@ -96,11 +96,6 @@ const addGoal = async (req: any, res: any) => {
         }
         user.id = user.sub;
 
-        if (!ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify('Invalid id'));
-            return;
-        }
-
         const mongodb = res.locals.mongodb;
         
         let new_goal = {

@@ -92,11 +92,6 @@ const addEntry = async (req: any, res: any) => {
         }
         user.id = user.sub;
 
-        if (!ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify('Invalid id'));
-            return;
-        }
-
         // DATA VALIDATION
         // entry should be a string
         let entry = req.body.entry || null;

@@ -88,10 +88,6 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         user.id = user.sub;
-        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify('Invalid id'));
-            return;
-        }
         // DATA VALIDATION
         // entry should be a string
         let entry = req.body.entry || null;
