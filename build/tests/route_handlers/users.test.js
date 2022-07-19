@@ -85,7 +85,7 @@ const fillerUsers = [
     }
 ];
 describe('Users', () => {
-    test('responds to GET /users', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to GET /users/active', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let users_json = "";
         // mock the send function
@@ -101,6 +101,11 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
+            oidc: {
+                user: {
+                    sub: temp_user_id,
+                }
+            },
             send: send,
             locals: {
                 mongodb: {
@@ -110,12 +115,12 @@ describe('Users', () => {
                                 return {
                                     collection: (collectionName) => {
                                         return {
-                                            find: jest.fn().mockImplementation((query) => {
+                                            findOne: jest.fn().mockImplementation((query) => {
                                                 if (query._id) {
                                                     return fillerUsers.find(user => user._id.toString() === query._id.toString());
                                                 }
                                                 else {
-                                                    return fillerUsers;
+                                                    return null;
                                                 }
                                             }),
                                         };
@@ -128,7 +133,7 @@ describe('Users', () => {
             }
         };
         // call the function
-        yield (0, users_1.getAllUsers)(req, res);
+        yield (0, users_1.getActiveUser)(req, res);
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);

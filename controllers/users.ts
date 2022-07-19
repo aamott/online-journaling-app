@@ -3,19 +3,19 @@
  */
 import { ObjectId } from 'mongodb';
 // GET /users
-const getAllUsers = async (req: any, res: any) => {
-    try {
-        res.setHeader('Content-Type', 'application/json')
-        // fetch the users from mongodb
-        const mongodb = req.locals.mongodb;
-        const users = await mongodb.getDb().db().collection('users').find().toArray();
+// const getAllUsers = async (req: any, res: any) => {
+//     try {
+//         res.setHeader('Content-Type', 'application/json')
+//         // fetch the users from mongodb
+//         const mongodb = req.locals.mongodb;
+//         const users = await mongodb.getDb().db().collection('users').find().toArray();
         
-        res.status(200).send(JSON.stringify(users));
-    }
-    catch (err) {
-        res.status(500).send(err);
-    }
-};
+//         res.status(200).send(JSON.stringify(users));
+//     }
+//     catch (err) {
+//         res.status(500).send(err);
+//     }
+// };
 
 
 // GET /users/:id
@@ -24,8 +24,8 @@ const getUser = async (req: any, res: any) => {
         res.setHeader('Content-Type', 'application/json')
         // fetch the user from mongodb
         const mongodb = req.locals.mongodb;
-        const user_id = new ObjectId(req.params.id);
-        const user = await mongodb.getDb().db().collection('users').findOne({ _id: user_id });
+        const user_id = res.oidc.user.sub;
+        const user = await mongodb.getDb().db().collection('users').findOne({ sub: user_id });
 
         // return 404 if user not found
         if (!user) {
@@ -40,6 +40,36 @@ const getUser = async (req: any, res: any) => {
 };
 
 
+// GET /users/active
+const getActiveUser = async (req: any, res: any) => {
+    try {
+        res.setHeader('Content-Type', 'application/json')
+        const user = req.oidc.user;
+
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+
+        // fetch the user from mongodb
+        const mongodb = req.locals.mongodb;
+        const userData = await mongodb.getDb().db().collection('users').findOne({ sub: user.id });
+
+        // return 404 if user not found
+        if (!userData) {
+            res.status(404).send('User not found');
+            return;
+        }
+        res.status(200).send(JSON.stringify(userData));
+    }
+    catch (err) {
+        res.status(500).send(err);
+    }
+}
+
+
 // POST /users
 const addUser = async (req: any, res: any) => {
 
@@ -50,6 +80,7 @@ const addUser = async (req: any, res: any) => {
         const mongodb = req.locals.mongodb;
 
         let newUser = {
+            sub: req.oidc.user.sub,
             name: req.body.name,
             username: req.body.username,
             entry_ids: [],
@@ -73,8 +104,8 @@ const updateUser = async (req: any, res: any) => {
         res.setHeader('Content-Type', 'application/json')
         // get the user from mongodb
         const mongodb = req.locals.mongodb;
-        const user_id = new ObjectId(req.params.id);
-        const user = await mongodb.getDb().db().collection('users').findOne({ _id: user_id });
+        const user_id = res.oidc.user.sub;
+        const user = await mongodb.getDb().db().collection('users').findOne({ sub: user_id });
         
         // return 404 if user not found
         if (!user) {
@@ -83,9 +114,9 @@ const updateUser = async (req: any, res: any) => {
         }
 
         // update the user
-        user.name = req.body.name;
-        user.username = req.body.username;
-        const result = await mongodb.getDb().db().collection('users').updateOne({ _id: user_id }, user);
+        user.name = req.params.name;
+        user.username = req.params.username;
+        const result = await mongodb.getDb().db().collection('users').updateOne({ sub: user_id }, user);
         res.status(200).send(JSON.stringify(result));
 
         res.status(200).send(JSON.stringify(result.modifiedCount));
@@ -123,4 +154,41 @@ const deleteUser = async (req: any, res: any) => {
 };
 
 
-export { getAllUsers, getUser, addUser, updateUser, deleteUser };
+const loginCallback = async (req: any, res: any) => {
+    try {
+        res.setHeader('Content-Type', 'application/json')
+        const user = req.oidc.user;
+
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+
+        // fetch the user from mongodb
+        const mongodb = req.locals.mongodb;
+        const userData = await mongodb.getDb().db().collection('users').findOne({ sub: user.sub });
+
+        // if the user is not found, create a new user
+        if (!userData) {
+            const newUser = {
+                _id: new ObjectId(),
+                sub: user.sub,
+                name: user.name,
+                entry_ids: [],
+                goal_ids: [],
+                media_ids: []
+            };
+            await mongodb.getDb().db().collection('users').insertOne(newUser);
+        }
+
+        // redirect to the home page
+        res.redirect('http://localhost:8080/home.html');
+    }
+    catch (err) {
+        res.status(500).send("Internal server error");
+    }
+}
+
+export { getActiveUser, getUser, addUser, updateUser, deleteUser, loginCallback };

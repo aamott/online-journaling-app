@@ -11,9 +11,9 @@ const express_openid_connect_1 = require("express-openid-connect");
 const router = express_1.default.Router();
 const entries = require('../controllers/entries');
 // Get all entries
-router.get('/', entries.getAllEntries);
+router.get('/', (0, express_openid_connect_1.requiresAuth)(), entries.getAllEntries);
 // Get a specific entry
-router.get('/:id', entries.getEntry);
+router.get('/:id', (0, express_openid_connect_1.requiresAuth)(), entries.getEntry);
 // Add a new entry
 router.post('/', (0, express_openid_connect_1.requiresAuth)(), entries.addEntry);
 // Update a entry

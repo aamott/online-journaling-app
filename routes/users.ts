@@ -6,19 +6,28 @@ import { requiresAuth } from 'express-openid-connect';
 const router = express.Router();
 const users = require('../controllers/users');
 
+
+// callback after successful login
+router.use('/loginCallback', users.loginCallback);
+
+// Get the active user
+router.get('/active', requiresAuth(), users.getActiveUser);
+
 // Get all users
-router.get('/', requiresAuth(), users.getAllUsers);
+// router.get('/', requiresAuth(), users.getAllUsers);
 
 // Get a specific user
-router.get('/:id', requiresAuth(), users.getUser);
+// router.get('/:id', requiresAuth(), users.getUser);
 
 // Add a new user
-router.post('/', requiresAuth(), users.addUser);
+// router.post('/', requiresAuth(), users.addUser);
 
 // Update a user
-router.put('/:id', requiresAuth(), users.updateUser);
+// router.put('/:id', requiresAuth(), users.updateUser);
 
 // Delete a user
-router.delete('/:id', requiresAuth(), users.deleteUser);
+// router.delete('/:id', requiresAuth(), users.deleteUser);
+
+
 
 module.exports = router;

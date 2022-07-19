@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 // const mongodb = require('../db/connect');
-import {getAllUsers, getUser, addUser, updateUser, deleteUser} from '../../controllers/users';
+import {getActiveUser, getUser, addUser, updateUser, deleteUser} from '../../controllers/users';
 
 let temp_user_id = new ObjectId(1).toString();
 
@@ -80,7 +80,7 @@ const fillerUsers = [
 
 describe('Users', () => {
 
-    test('responds to GET /users', async () => {
+    test('responds to GET /users/active', async () => {
         // create a variable to store the response
         let users_json = "";
 
@@ -99,6 +99,11 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
+            oidc: {
+                user: {
+                    sub: temp_user_id,
+                }
+            },
             send: send,
             locals: {
                 mongodb: {
@@ -108,17 +113,17 @@ describe('Users', () => {
                                 return {
                                     collection: (collectionName: string) => {
                                         return {
-                                            find: jest.fn().mockImplementation((query: any) => {
+                                            findOne: jest.fn().mockImplementation((query) => {
                                                 if (query._id) {
                                                     return fillerUsers.find(user => user._id.toString() === query._id.toString());
                                                 } else {
-                                                    return fillerUsers;
+                                                    return null;
                                                 }
                                             }),
         }}}}}}}}}
 
         // call the function
-        await getAllUsers(req, res);
+        await getActiveUser(req, res);
 
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');

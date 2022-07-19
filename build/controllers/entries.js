@@ -10,14 +10,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEntry = exports.updateEntry = exports.addEntry = exports.getEntry = exports.getAllEntries = void 0;
+/******************
+ * ENTRIES CONTROLLER
+ */
 const mongodb_1 = require("mongodb");
-const mongodb = require('../db/connect');
 // GET /entries
 const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.setHeader('Content-Type', 'application/json');
         const mongodb = req.locals.mongodb;
-        const entries = yield mongodb.getDb().db().collection('entries').find().toArray();
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+        const user_id = user.sub;
+        const entries = yield mongodb.getDb().db().collection('entries').find({ owner_id: user_id }).toArray();
         res.status(200).send(JSON.stringify(entries));
     }
     catch (err) {
@@ -28,22 +38,30 @@ exports.getAllEntries = getAllEntries;
 // GET /entries/:id
 const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // get the entry ID from the URL
-    const entryId = req.params.id;
-    if (!entryId) {
-        res.status(400).send('No entry ID provided');
-        return;
-    }
-    if (!mongodb_1.ObjectId.isValid(entryId)) {
-        res.status(400).send('Invalid entry ID');
-        return;
-    }
     try {
         res.setHeader('Content-Type', 'application/json');
+        const entryId = req.params.id;
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+        if (!entryId) {
+            res.status(400).send('No entry ID provided');
+            return;
+        }
         const mongodb = req.locals.mongodb;
         const entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(entryId) });
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send('Entry not found');
+            return;
+        }
+        // return 403 if entry not owned by user
+        if (entry.owner_id !== user.sub) {
+            res.status(403).send('You are not authorized to view this entry');
             return;
         }
         res.status(200).send(JSON.stringify(entry));
@@ -58,30 +76,51 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the entry to test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        let location = req.body.location;
-        let tags = req.body.tags;
-        // make sure tags is a list
-        if (tags && !Array.isArray(tags)) {
-            tags = [tags];
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
         }
+        user.id = user.sub;
+        // DATA VALIDATION
         // entry should be a string
         let entry = req.body.entry || null;
         if (!entry) {
             res.status(400).send('No entry provided');
             return;
         }
+        const location = req.body.location;
+        let tags = req.body.tags;
+        // make sure tags is a list
+        if (req.body.tags && !Array.isArray(req.body.tags)) {
+            tags = [req.body.tags];
+        }
+        else if (!req.body.tags) {
+            tags = [];
+        }
+        // make sure media_ids is a list
+        let media_ids = req.body.media_ids;
+        if (req.body.media_ids && !Array.isArray(req.body.media_ids)) {
+            media_ids = [req.body.media_ids];
+        }
+        else if (!req.body.media_ids) {
+            media_ids = [];
+        }
+        // ADD THE ENTRY
+        const mongodb = req.locals.mongodb;
         let newEntry = {
+            owner_id: user.sub,
             date_created: new Date(),
             date_updated: new Date(),
             date_deleted: null,
             location: location,
             tags: tags,
             entry: entry,
-            media_ids: [],
+            media_ids: media_ids,
             goal_ids: []
         };
         // add the entry to the database
-        const mongodb = req.locals.mongodb;
         const result = yield mongodb.getDb().db().collection('entries').insertOne(newEntry);
         res.status(200).send(JSON.stringify(result.insertedId));
     }
@@ -92,11 +131,23 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.addEntry = addEntry;
 // PUT /entries/:id
 const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.setHeader('Content-Type', 'application/json');
     // update the entry
     try {
+        res.setHeader('Content-Type', 'application/json');
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
         const mongodb = req.locals.mongodb;
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
+        // return 403 if entry not owned by user
+        if (entry.owner_id !== user.sub) {
+            res.status(403).send('You are not authorized to update this entry');
+            return;
+        }
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send('Entry not found');
@@ -108,7 +159,12 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             media_ids = [media_ids];
         }
         if (media_ids) {
-            media_ids = media_ids.map((id) => new mongodb_1.ObjectId(id));
+            media_ids = media_ids.map((id) => {
+                if (mongodb_1.ObjectId.isValid(id)) {
+                    return new mongodb_1.ObjectId(id);
+                }
+                return null;
+            });
         }
         // convert goal_ids to a list of ObjectIds
         let goal_ids = req.body.goal_ids;
@@ -116,7 +172,12 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             goal_ids = [goal_ids];
         }
         if (goal_ids) {
-            goal_ids = goal_ids.map((id) => new mongodb_1.ObjectId(id));
+            goal_ids = goal_ids.map((id) => {
+                if (mongodb_1.ObjectId.isValid(id)) {
+                    return new mongodb_1.ObjectId(id);
+                }
+                return null;
+            });
         }
         // update the entry
         entry.entry = req.body.entry || entry.entry;
@@ -125,12 +186,17 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         entry.tags = req.body.tags || entry.tags;
         entry.media_ids = req.body.media_ids || entry.media_ids;
         entry.goal_ids = req.body.goal_ids || entry.goal_ids;
+        // Check that the entry id is valid
+        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify("Invalid entry ID: '" + req.params.id + "'"));
+            return;
+        }
         // update the entry in the database
-        const result = yield mongodb.getDb().db().collection('entries').updateOne({ _id: new mongodb_1.ObjectId(req.params.id) }, entry);
-        res.status(200).send(JSON.stringify(result.modifiedCount));
+        const result = yield mongodb.getDb().db().collection('entries').updateOne({ _id: new mongodb_1.ObjectId(req.params.id) }, { $set: entry });
+        res.send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.updateEntry = updateEntry;
@@ -140,9 +206,21 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // delete the entry from test data
     try {
         res.setHeader('Content-Type', 'application/json');
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
         const mongodb = req.locals.mongodb;
         let entry_id = new mongodb_1.ObjectId(req.params.id);
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });
+        // return 403 if entry not owned by user
+        if (entry.owner_id !== user.sub) {
+            res.status(403).send('You are not authorized to delete this entry');
+            return;
+        }
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send('Entry not found');

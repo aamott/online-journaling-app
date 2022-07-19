@@ -1,5 +1,17 @@
 /******************
  * GOALS CONTROLLER
+ * 
+ * Goals database looks like this:
+ * {
+ *      _id: ObjectId,
+ *      owner_id: String,
+ *      description: String,
+ *      createdDate: Date,
+ *      dueDate: Date,
+ *      deletedDate: Date,
+ *      entry_ids: [ObjectId],
+ *      media_ids: [ObjectId],
+ * }
  */
  import { ObjectId } from 'mongodb';
 
@@ -9,9 +21,11 @@ const getAllGoals = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
 
+        const user_id = req.locals.user_id;
+
         const mongodb = req.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
-        const goals = await goalsCollection.find({}).toArray();
+        const goals = await goalsCollection.find({ owner_id: user_id }).toArray();
         res.status(200).send(JSON.stringify(goals));
     }
     catch (err) {
@@ -29,6 +43,19 @@ const getGoal = async (req: any, res: any) => {
         const mongodb = req.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: new ObjectId(req.params.id) });
+
+        // return 403 if user is not the owner of the goal
+        if (goal.owner_id !== req.locals.user_id) {
+            res.status(403).send('Forbidden');
+            return;
+        }
+
+        // return 404 if goal not found
+        if (!goal) {
+            res.status(404).send('Goal not found');
+            return;
+        }
+
         res.status(200).send(JSON.stringify(goal));
     }
     catch (err) {
@@ -47,7 +74,8 @@ const addGoal = async (req: any, res: any) => {
         const goalsCollection = mongodb.getDb().db().collection('goals');
         
         let new_goal = {
-            name: 'Second Goal',
+            owner_id: req.locals.user_id,
+            description: req.body.description,
             createdDate: new Date(),
             dueDate: new Date(), 
             deletedDate: null,
@@ -71,19 +99,23 @@ const updateGoal = async (req: any, res: any) => {
         const mongodb = req.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: new ObjectId(req.params.id) });
+
+        // return 403 if user is not the owner of the goal
+        if (goal.owner_id !== req.locals.user_id) {
+            res.status(403).send('Forbidden');
+            return;
+        }
          
-        // return 404 if user not found
+        // return 404 if goal not found
         if (!goal) {
-            res.status(404).send('User not found');
+            res.status(404).send('Goal not found');
             return;
         }
 
-        goal.name = req.body.name || goal.name;
+        goal.description = req.body.description || goal.description;
         goal.dueDate = req.body.dueDate || goal.dueDate;
-        // if the user sets deletedDate to null, it will be deleted, but if the user doesn't set it, it will be left alone
-        if (req.body.deletedDate) {
-            goal.deletedDate = req.body.deletedDate;
-        }
+        // if a goal is updated, it's deletedDate is set to null
+        goal.deletedDate = null;
         goal.entry_ids = req.body.entry_ids || goal.entry_ids;
         goal.media_ids = req.body.media_ids || goal.media_ids;
 
@@ -103,6 +135,13 @@ const deleteGoal = async (req: any, res: any) => {
         res.setHeader('Content-Type', 'application/json')
         const goalId = req.params.id;
         const goal = await mongodb.getDb().db().collection('goals').findOne({_id:goalId});
+
+        // return 403 if user is not the owner of the goal
+        if (goal.owner_id !== req.locals.user_id) {
+            res.status(403).send('Forbidden');
+            return;
+        }
+
         // return 404 if goal not found
         if (!goal) {
             res.status(404).send('Goal not found');

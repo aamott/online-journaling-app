@@ -7,10 +7,10 @@ const router = express.Router();
 const entries = require('../controllers/entries');
 
 // Get all entries
-router.get('/', entries.getAllEntries);
+router.get('/', requiresAuth(), entries.getAllEntries);
 
 // Get a specific entry
-router.get('/:id', entries.getEntry);
+router.get('/:id', requiresAuth(), entries.getEntry);
 
 // Add a new entry
 router.post('/', requiresAuth(), entries.addEntry);

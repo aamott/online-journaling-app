@@ -10,14 +10,18 @@ const express_1 = __importDefault(require("express"));
 const express_openid_connect_1 = require("express-openid-connect");
 const router = express_1.default.Router();
 const users = require('../controllers/users');
+// callback after successful login
+router.use('/loginCallback', users.loginCallback);
+// Get the active user
+router.get('/active', (0, express_openid_connect_1.requiresAuth)(), users.getActiveUser);
 // Get all users
-router.get('/', (0, express_openid_connect_1.requiresAuth)(), users.getAllUsers);
+// router.get('/', requiresAuth(), users.getAllUsers);
 // Get a specific user
-router.get('/:id', (0, express_openid_connect_1.requiresAuth)(), users.getUser);
+// router.get('/:id', requiresAuth(), users.getUser);
 // Add a new user
-router.post('/', (0, express_openid_connect_1.requiresAuth)(), users.addUser);
+// router.post('/', requiresAuth(), users.addUser);
 // Update a user
-router.put('/:id', (0, express_openid_connect_1.requiresAuth)(), users.updateUser);
+// router.put('/:id', requiresAuth(), users.updateUser);
 // Delete a user
-router.delete('/:id', (0, express_openid_connect_1.requiresAuth)(), users.deleteUser);
+// router.delete('/:id', requiresAuth(), users.deleteUser);
 module.exports = router;
