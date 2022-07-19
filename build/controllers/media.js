@@ -20,23 +20,18 @@ const getAllMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const userId = req.oidc.user.sub;
-        // get the user's media
-        const user = yield mongodb.getDb().db().collection('users').findOne({ _id: userId });
+        const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
             res.status(404).send('User not found');
             return;
         }
+        user.id = user.sub;
         // get the user's media
         const mediaIds = user.media_ids;
-        const media = yield mongodb.getDb().db().collection('media').find({ _id: { $in: mediaIds } }).toArray();
-        // return 404 if media not found
-        if (!media) {
-            res.status(404).send('Media not found');
-            return;
-        }
-        res.status(200).send(JSON.stringify(media));
+        // const media = await mongodb.getDb().db().collection('media').find({_id: {$in: mediaIds}});
+        // const mediaArray = await media.toArray();
+        res.status(200).send(JSON.stringify(mediaIds));
     }
     catch (err) {
         res.status(500).send("Internal server error");
@@ -47,6 +42,13 @@ exports.getAllMedia = getAllMedia;
 const getMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.setHeader('Content-Type', 'application/json');
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
         const mediaId = new mongodb_1.ObjectId(req.params.id);
         if (!mediaId) {
             res.status(400).send('No media ID provided');
@@ -59,7 +61,7 @@ const getMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         // make sure user is owner of media
-        if (media.owner_id !== req.oidc.user.sub) {
+        if (media.owner_id !== user.sub) {
             res.status(403).send('You are not authorized to view this media');
             return;
         }

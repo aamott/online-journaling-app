@@ -10,25 +10,20 @@ const getAllMedia = async (req: any, res: any) => {
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const userId = req.oidc.user.sub;
-        // get the user's media
-        const user = await mongodb.getDb().db().collection('users').findOne({_id:userId});
+        const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
             res.status(404).send('User not found');
             return;
         }
+        user.id = user.sub;
 
         // get the user's media
         const mediaIds = user.media_ids;
-        const media = await mongodb.getDb().db().collection('media').find({_id:{$in:mediaIds}}).toArray();
-        // return 404 if media not found
-        if (!media) {
-            res.status(404).send('Media not found');
-            return;
-        }
+        // const media = await mongodb.getDb().db().collection('media').find({_id: {$in: mediaIds}});
+        // const mediaArray = await media.toArray();
 
-        res.status(200).send(JSON.stringify(media));
+        res.status(200).send(JSON.stringify(mediaIds));
     }
     catch (err) {
         res.status(500).send("Internal server error");
@@ -40,6 +35,14 @@ const getAllMedia = async (req: any, res: any) => {
 const getMedia = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json');
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+        
         const mediaId = new ObjectId(req.params.id);
 
         if (!mediaId) {
@@ -56,7 +59,7 @@ const getMedia = async (req: any, res: any) => {
         }
 
         // make sure user is owner of media
-        if (media.owner_id !== req.oidc.user.sub) {
+        if (media.owner_id !== user.sub) {
             res.status(403).send('You are not authorized to view this media');
             return;
         }
@@ -70,15 +73,7 @@ const getMedia = async (req: any, res: any) => {
 
 
 // POST /media
-const addMedia = async (req: {
-    [x: string]: any;
-    body: {
-        location: string | null;
-        tags: string[],
-        media_uri: string;
-        entry_ids: string[] | null;
-    };
-}, res: any) => {
+const addMedia = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json');
 
