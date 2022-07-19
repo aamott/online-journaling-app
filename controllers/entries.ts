@@ -18,11 +18,6 @@ const getAllEntries = async (req: any, res: any) => {
         }
         user.id = user.sub;
 
-        if (!ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify('Invalid id'));
-            return;
-        }
-
         const user_id = user.sub;
         const entries = await mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
         const entriesList = await entries.toArray();

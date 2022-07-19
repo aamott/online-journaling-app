@@ -26,10 +26,6 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return;
         }
         user.id = user.sub;
-        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify('Invalid id'));
-            return;
-        }
         const user_id = user.sub;
         const entries = yield mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
         const entriesList = yield entries.toArray();
