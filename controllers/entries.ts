@@ -20,6 +20,10 @@ const getAllEntries = async (req: any, res: any) => {
 
         const user_id = user.sub;
         const entries = await mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
+        if (!entries) {
+            res.status(404).send(JSON.stringify('No entries found'));
+            return;
+        }
         const entriesList = await entries.toArray();
 
         res.status(200).send(JSON.stringify(entriesList));
@@ -262,15 +266,15 @@ const deleteEntry = async (req: any, res: any) => {
         let entry_id = new ObjectId(req.params.id);
         let entry = await mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });
 
-        // return 403 if entry not owned by user
-        if (entry.owner_id !== user.sub) {
-            res.status(403).send(JSON.stringify('You are not authorized to delete this entry'));
-            return;
-        }
-
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send(JSON.stringify('Entry not found'));
+            return;
+        }
+        
+        // return 403 if entry not owned by user
+        if (entry.owner_id !== user.sub) {
+            res.status(403).send(JSON.stringify('You are not authorized to delete this entry'));
             return;
         }
 

@@ -30,6 +30,9 @@ const getAllGoals = async (req: any, res: any) => {
 
         const mongodb = res.locals.mongodb;
         const goals = mongodb.getDb().db().collection('goals').find({ owner_id: user.sub });
+        if (!goals) {
+            res.status(404).send(JSON.stringify('Goals not found'));
+        }
         const goalsArray = await goals.toArray();
         res.status(200).send(JSON.stringify(goalsArray));
     }
@@ -192,15 +195,15 @@ const deleteGoal = async (req: any, res: any) => {
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: goalId });
 
-        // return 403 if user is not the owner of the goal
-        if (goal.owner_id !== user.sub) {
-            res.status(403).send(JSON.stringify('Forbidden'));
-            return;
-        }
-
         // return 404 if goal not found
         if (!goal) {
             res.status(404).send(JSON.stringify('Goal not found'));
+            return;
+        }
+        
+        // return 403 if user is not the owner of the goal
+        if (goal.owner_id !== user.sub) {
+            res.status(403).send(JSON.stringify('Forbidden'));
             return;
         }
 

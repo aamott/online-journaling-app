@@ -39,7 +39,18 @@ describe('Entries', () => {
                                     collection: (collectionName: string) => {
                                         return {
                                             find: jest.fn().mockImplementation((query) => {
-                                                return [];
+                                                return {
+                                                    toArray: jest.fn().mockImplementation(() => {
+                                                        return [{
+                                                            _id: temp_entry_id,
+                                                            owner_id: 'Google|23432u432890',
+                                                            title: 'test',
+                                                            content: 'test',
+                                                            created_at: new Date(),
+                                                            updated_at: new Date(),
+                                                        }];
+                                                    })
+                                                };
                                             }),
                                         };
                                     }

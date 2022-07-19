@@ -28,6 +28,10 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         user.id = user.sub;
         const user_id = user.sub;
         const entries = yield mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
+        if (!entries) {
+            res.status(404).send(JSON.stringify('No entries found'));
+            return;
+        }
         const entriesList = yield entries.toArray();
         res.status(200).send(JSON.stringify(entriesList));
     }
@@ -236,14 +240,14 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const mongodb = res.locals.mongodb;
         let entry_id = new mongodb_1.ObjectId(req.params.id);
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });
-        // return 403 if entry not owned by user
-        if (entry.owner_id !== user.sub) {
-            res.status(403).send(JSON.stringify('You are not authorized to delete this entry'));
-            return;
-        }
         // return 404 if entry not found
         if (!entry) {
             res.status(404).send(JSON.stringify('Entry not found'));
+            return;
+        }
+        // return 403 if entry not owned by user
+        if (entry.owner_id !== user.sub) {
+            res.status(403).send(JSON.stringify('You are not authorized to delete this entry'));
             return;
         }
         // delete the entry from the database
