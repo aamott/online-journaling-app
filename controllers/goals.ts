@@ -23,7 +23,7 @@ const getAllGoals = async (req: any, res: any) => {
 
         const user_id = req.locals.user_id;
 
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goals = await goalsCollection.find({ owner_id: user_id }).toArray();
         res.status(200).send(JSON.stringify(goals));
@@ -40,7 +40,7 @@ const getGoal = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: new ObjectId(req.params.id) });
 
@@ -70,7 +70,7 @@ const addGoal = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
 
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         
         let new_goal = {
@@ -96,7 +96,7 @@ const updateGoal = async (req: any, res: any) => {
     // update the goal in test data
     try {
         res.setHeader('Content-Type', 'application/json')
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: new ObjectId(req.params.id) });
 

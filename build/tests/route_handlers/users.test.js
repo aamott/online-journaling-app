@@ -103,7 +103,7 @@ describe('Users', () => {
             }),
             oidc: {
                 user: {
-                    sub: temp_user_id,
+                    sub: 'Google|23432u432890',
                 }
             },
             send: send,

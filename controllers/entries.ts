@@ -8,7 +8,7 @@ const getAllEntries = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json');
 
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user = req.oidc.user;
 
         // return 404 if user not found
@@ -48,7 +48,7 @@ const getEntry = async (req: any, res: any) => {
             return;
         }
 
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const entry = await mongodb.getDb().db().collection('entries').findOne({ _id: new ObjectId(entryId) });
 
         // return 404 if entry not found
@@ -112,7 +112,7 @@ const addEntry = async (req: any, res: any) => {
         }
         
         // ADD THE ENTRY
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
 
         let newEntry = {
             owner_id: user.sub,
@@ -150,7 +150,7 @@ const updateEntry = async (req: any, res: any) => {
             return;
         }
         user.id = user.sub;
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         let entry = await mongodb.getDb().db().collection('entries').findOne({ _id: new ObjectId(req.params.id) });
 
         // return 403 if entry not owned by user
@@ -235,7 +235,7 @@ const deleteEntry = async (req: any, res: any) => {
         }
         user.id = user.sub;
 
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         let entry_id = new ObjectId(req.params.id);
         let entry = await mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });
 

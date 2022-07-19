@@ -18,7 +18,7 @@ const mongodb_1 = require("mongodb");
 const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.setHeader('Content-Type', 'application/json');
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
@@ -52,7 +52,7 @@ const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(400).send('No entry ID provided');
             return;
         }
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(entryId) });
         // return 404 if entry not found
         if (!entry) {
@@ -108,7 +108,7 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             media_ids = [];
         }
         // ADD THE ENTRY
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         let newEntry = {
             owner_id: user.sub,
             date_created: new Date(),
@@ -141,7 +141,7 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         user.id = user.sub;
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 403 if entry not owned by user
         if (entry.owner_id !== user.sub) {
@@ -213,7 +213,7 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         user.id = user.sub;
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         let entry_id = new mongodb_1.ObjectId(req.params.id);
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });
         // return 403 if entry not owned by user

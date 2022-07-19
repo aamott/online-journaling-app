@@ -19,7 +19,7 @@ const mongodb_1 = require("mongodb");
 //     try {
 //         res.setHeader('Content-Type', 'application/json')
 //         // fetch the users from mongodb
-//         const mongodb = req.locals.mongodb;
+//         const mongodb = res.locals.mongodb;
 //         const users = await mongodb.getDb().db().collection('users').find().toArray();
 //         res.status(200).send(JSON.stringify(users));
 //     }
@@ -32,7 +32,7 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.setHeader('Content-Type', 'application/json');
         // fetch the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user_id = res.oidc.user.sub;
         const user = yield mongodb.getDb().db().collection('users').findOne({ sub: user_id });
         // return 404 if user not found
@@ -59,7 +59,7 @@ const getActiveUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         user.id = user.sub;
         // fetch the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const userData = yield mongodb.getDb().db().collection('users').findOne({ sub: user.id });
         // return 404 if user not found
         if (!userData) {
@@ -78,7 +78,7 @@ const addUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the user to test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         let newUser = {
             sub: req.oidc.user.sub,
             name: req.body.name,
@@ -101,7 +101,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         res.setHeader('Content-Type', 'application/json');
         // get the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user_id = res.oidc.user.sub;
         const user = yield mongodb.getDb().db().collection('users').findOne({ sub: user_id });
         // return 404 if user not found
@@ -127,7 +127,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         res.setHeader('Content-Type', 'application/json');
         // get the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user_id = new mongodb_1.ObjectId(req.params.id);
         const user = yield mongodb.getDb().db().collection('users').findOne({ _id: user_id });
         // return 404 if user not found
@@ -155,7 +155,7 @@ const loginCallback = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         user.id = user.sub;
         // fetch the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const userData = yield mongodb.getDb().db().collection('users').findOne({ sub: user.sub });
         // if the user is not found, create a new user
         if (!userData) {

@@ -32,7 +32,7 @@ const getAllGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         res.setHeader('Content-Type', 'application/json');
         const user_id = req.locals.user_id;
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goals = yield goalsCollection.find({ owner_id: user_id }).toArray();
         res.status(200).send(JSON.stringify(goals));
@@ -47,7 +47,7 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = yield goalsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 403 if user is not the owner of the goal
@@ -72,7 +72,7 @@ const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the goal to test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         let new_goal = {
             owner_id: req.locals.user_id,
@@ -96,7 +96,7 @@ const updateGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // update the goal in test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = yield goalsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 403 if user is not the owner of the goal

@@ -36,8 +36,8 @@ const mongodb = require('../db/connect');
  * MongoDB
  */
 router.use((req, res, next) => {
-    req.locals = {};
-    req.locals.mongodb = mongodb;
+    res.locals = {};
+    res.locals.mongodb = mongodb;
     next();
 });
 /********************

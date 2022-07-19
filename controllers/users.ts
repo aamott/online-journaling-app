@@ -7,7 +7,7 @@ import { ObjectId } from 'mongodb';
 //     try {
 //         res.setHeader('Content-Type', 'application/json')
 //         // fetch the users from mongodb
-//         const mongodb = req.locals.mongodb;
+//         const mongodb = res.locals.mongodb;
 //         const users = await mongodb.getDb().db().collection('users').find().toArray();
         
 //         res.status(200).send(JSON.stringify(users));
@@ -23,7 +23,7 @@ const getUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         // fetch the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user_id = res.oidc.user.sub;
         const user = await mongodb.getDb().db().collection('users').findOne({ sub: user_id });
 
@@ -54,7 +54,7 @@ const getActiveUser = async (req: any, res: any) => {
         user.id = user.sub;
 
         // fetch the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const userData = await mongodb.getDb().db().collection('users').findOne({ sub: user.id });
 
         // return 404 if user not found
@@ -77,7 +77,7 @@ const addUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
 
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
 
         let newUser = {
             sub: req.oidc.user.sub,
@@ -103,7 +103,7 @@ const updateUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         // get the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user_id = res.oidc.user.sub;
         const user = await mongodb.getDb().db().collection('users').findOne({ sub: user_id });
         
@@ -134,7 +134,7 @@ const deleteUser = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         // get the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const user_id = new ObjectId(req.params.id);
         const user = await mongodb.getDb().db().collection('users').findOne({ _id: user_id });
 
@@ -167,7 +167,7 @@ const loginCallback = async (req: any, res: any) => {
         user.id = user.sub;
 
         // fetch the user from mongodb
-        const mongodb = req.locals.mongodb;
+        const mongodb = res.locals.mongodb;
         const userData = await mongodb.getDb().db().collection('users').findOne({ sub: user.sub });
 
         // if the user is not found, create a new user
