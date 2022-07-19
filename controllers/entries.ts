@@ -44,7 +44,7 @@ const getEntry = async (req: any, res: any) => {
         user.id = user.sub;
 
         if (!entryId) {
-            res.status(400).send('No entry ID provided');
+            res.status(400).send(JSON.stringify('No entry ID provided'));
             return;
         }
 
@@ -89,7 +89,7 @@ const addEntry = async (req: any, res: any) => {
         // entry should be a string
         let entry = req.body.entry || null;
         if (!entry) {
-            res.status(400).send('No entry provided');
+            res.status(400).send(JSON.stringify('No entry provided'));
             return;
         }
 
@@ -154,7 +154,8 @@ const updateEntry = async (req: any, res: any) => {
         // check that the id is valid
         const entryId = req.params.id;
         if (!entryId) {
-            res.status(400).send('No entry ID provided');
+            // convert the error to a JSON string and send it
+            res.status(400).send(JSON.stringify('No entry ID provided'));
             return;
         } else if (!ObjectId.isValid(entryId)) {
             res.status(400).send('Invalid entry ID');

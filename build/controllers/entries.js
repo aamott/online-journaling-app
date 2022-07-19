@@ -49,7 +49,7 @@ const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         user.id = user.sub;
         if (!entryId) {
-            res.status(400).send('No entry ID provided');
+            res.status(400).send(JSON.stringify('No entry ID provided'));
             return;
         }
         const mongodb = res.locals.mongodb;
@@ -87,7 +87,7 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // entry should be a string
         let entry = req.body.entry || null;
         if (!entry) {
-            res.status(400).send('No entry provided');
+            res.status(400).send(JSON.stringify('No entry provided'));
             return;
         }
         const location = req.body.location;
@@ -144,7 +144,8 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         // check that the id is valid
         const entryId = req.params.id;
         if (!entryId) {
-            res.status(400).send('No entry ID provided');
+            // convert the error to a JSON string and send it
+            res.status(400).send(JSON.stringify('No entry ID provided'));
             return;
         }
         else if (!mongodb_1.ObjectId.isValid(entryId)) {
