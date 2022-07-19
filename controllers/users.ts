@@ -13,7 +13,7 @@ import { ObjectId } from 'mongodb';
 //         res.status(200).send(JSON.stringify(users));
 //     }
 //     catch (err) {
-//         res.status(500).send(err);
+//         res.status(500).send("Internal server error");
 //     }
 // };
 
@@ -35,7 +35,7 @@ const getUser = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -65,7 +65,7 @@ const getActiveUser = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(userData));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 }
 
@@ -91,7 +91,7 @@ const addUser = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -122,7 +122,7 @@ const updateUser = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -149,7 +149,7 @@ const deleteUser = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 

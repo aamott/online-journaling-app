@@ -42,7 +42,7 @@ const getAllGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).send(JSON.stringify(goals));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getAllGoals = getAllGoals;
@@ -67,7 +67,7 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(goal));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getGoal = getGoal;
@@ -91,7 +91,7 @@ const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.addGoal = addGoal;
@@ -123,7 +123,7 @@ const updateGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.updateGoal = updateGoal;
@@ -148,7 +148,7 @@ const deleteGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.deleteGoal = deleteGoal;

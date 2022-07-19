@@ -24,7 +24,7 @@ const mongodb_1 = require("mongodb");
 //         res.status(200).send(JSON.stringify(users));
 //     }
 //     catch (err) {
-//         res.status(500).send(err);
+//         res.status(500).send("Internal server error");
 //     }
 // };
 // GET /users/:id
@@ -43,7 +43,7 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(user));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getUser = getUser;
@@ -69,7 +69,7 @@ const getActiveUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).send(JSON.stringify(userData));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getActiveUser = getActiveUser;
@@ -91,7 +91,7 @@ const addUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.addUser = addUser;
@@ -117,7 +117,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.updateUser = updateUser;
@@ -140,7 +140,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.deleteUser = deleteUser;

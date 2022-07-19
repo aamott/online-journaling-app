@@ -33,7 +33,7 @@ const getAllGoals = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(goals));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
  
@@ -63,7 +63,7 @@ const getGoal = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(goal));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
  
@@ -90,7 +90,7 @@ const addGoal = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
  
@@ -127,7 +127,7 @@ const updateGoal = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
  
@@ -156,7 +156,7 @@ const deleteGoal = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 

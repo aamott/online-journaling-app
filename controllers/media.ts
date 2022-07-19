@@ -31,7 +31,7 @@ const getAllMedia = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(media));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -64,7 +64,7 @@ const getMedia = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(media));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -122,7 +122,7 @@ const addMedia = async (req: {
         res.status(200).send(JSON.stringify( result.insertId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -152,7 +152,7 @@ const deleteMedia = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 

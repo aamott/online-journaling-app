@@ -31,7 +31,7 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).send(JSON.stringify(entries));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getAllEntries = getAllEntries;
@@ -67,7 +67,7 @@ const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(entry));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getEntry = getEntry;
@@ -125,7 +125,7 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.addEntry = addEntry;
@@ -198,7 +198,7 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         entry.goal_ids = req.body.goal_ids || entry.goal_ids;
         // Check that the entry id is valid
         if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify("Invalid entry ID: '" + req.params.id + "'"));
+            res.status(400).send(JSON.stringify("Invalid entry ID'"));
             return;
         }
         // update the entry in the database
@@ -241,7 +241,7 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.deleteEntry = deleteEntry;

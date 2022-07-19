@@ -39,7 +39,7 @@ const getAllMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).send(JSON.stringify(media));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getAllMedia = getAllMedia;
@@ -66,7 +66,7 @@ const getMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(media));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.getMedia = getMedia;
@@ -108,7 +108,7 @@ const addMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send(JSON.stringify(result.insertId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.addMedia = addMedia;
@@ -135,7 +135,7 @@ const deleteMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 });
 exports.deleteMedia = deleteMedia;

@@ -23,7 +23,7 @@ const getAllEntries = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(entries));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -66,7 +66,7 @@ const getEntry = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(entry));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -131,7 +131,7 @@ const addEntry = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
@@ -214,7 +214,7 @@ const updateEntry = async (req: any, res: any) => {
 
         // Check that the entry id is valid
         if (!ObjectId.isValid(req.params.id)) {
-            res.status(400).send(JSON.stringify("Invalid entry ID: '" + req.params.id + "'"));
+            res.status(400).send(JSON.stringify("Invalid entry ID'"));
             return;
         }
 
@@ -266,7 +266,7 @@ const deleteEntry = async (req: any, res: any) => {
         res.status(200).send(JSON.stringify(result.deletedCount));
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(500).send("Internal server error");
     }
 };
 
