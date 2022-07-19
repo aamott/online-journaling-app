@@ -23,7 +23,7 @@ const getAllMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -45,28 +45,28 @@ const getMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
         if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send('Invalid media id');
+            res.status(400).send(JSON.stringify('Invalid media id'));
             return;
         }
         const mediaId = new mongodb_1.ObjectId(req.params.id);
         if (!mediaId) {
-            res.status(400).send('No media ID provided');
+            res.status(400).send(JSON.stringify('No media ID provided'));
             return;
         }
         const media = yield mongodb.getDb().db().collection('media').findOne({ _id: mediaId });
         // return 404 if media not found
         if (!media) {
-            res.status(404).send('Media not found');
+            res.status(404).send(JSON.stringify('Media not found'));
             return;
         }
         // make sure user is owner of media
         if (media.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to view this media');
+            res.status(403).send(JSON.stringify('You are not authorized to view this media'));
             return;
         }
         res.status(200).send(JSON.stringify(media));
@@ -91,7 +91,7 @@ const addMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // media should be a string
         let media = req.body.media_uri || null;
         if (!media) {
-            res.status(400).send('No media provided');
+            res.status(400).send(JSON.stringify('No media provided'));
             return;
         }
         // Make sure entry_ids is an Array of ObjectIds
@@ -131,32 +131,32 @@ const deleteMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send('Invalid media id');
+            res.status(400).send(JSON.stringify('Invalid media id'));
             return;
         }
         const mediaId = new mongodb_1.ObjectId(req.params.id);
         if (!mediaId) {
-            res.status(400).send('No media ID provided');
+            res.status(400).send(JSON.stringify('No media ID provided'));
             return;
         }
         const media = yield mongodb.getDb().db().collection('media').findOne({ _id: mediaId });
         // return 404 if media not found
         if (!media) {
-            res.status(404).send('Media not found');
+            res.status(404).send(JSON.stringify('Media not found'));
             return;
         }
         // make sure user is owner of media
         if (media.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to view this media');
+            res.status(403).send(JSON.stringify('You are not authorized to view this media'));
             return;
         }
         // make sure user is owner of media
         if (media.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to delete this media');
+            res.status(403).send(JSON.stringify('You are not authorized to delete this media'));
             return;
         }
         // delete media

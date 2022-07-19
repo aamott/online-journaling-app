@@ -34,7 +34,7 @@ const getAllGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         const mongodb = res.locals.mongodb;
@@ -55,7 +55,7 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -64,12 +64,12 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const goal = yield goalsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 403 if user is not the owner of the goal
         if (goal.owner_id !== user.sub) {
-            res.status(403).send('Forbidden');
+            res.status(403).send(JSON.stringify('Forbidden'));
             return;
         }
         // return 404 if goal not found
         if (!goal) {
-            res.status(404).send('Goal not found');
+            res.status(404).send(JSON.stringify('Goal not found'));
             return;
         }
         res.status(200).send(JSON.stringify(goal));
@@ -87,7 +87,7 @@ const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -118,12 +118,12 @@ const updateGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
         if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send('Invalid goal id');
+            res.status(400).send(JSON.stringify('Invalid goal id'));
             return;
         }
         const mongodb = res.locals.mongodb;
@@ -131,12 +131,12 @@ const updateGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const goal = yield goalsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 403 if user is not the owner of the goal
         if (goal.owner_id !== user.sub) {
-            res.status(403).send('Forbidden');
+            res.status(403).send(JSON.stringify('Forbidden'));
             return;
         }
         // return 404 if goal not found
         if (!goal) {
-            res.status(404).send('Goal not found');
+            res.status(404).send(JSON.stringify('Goal not found'));
             return;
         }
         goal.description = req.body.description || goal.description;
@@ -161,12 +161,12 @@ const deleteGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
         if (!mongodb_1.ObjectId.isValid(req.params.id)) {
-            res.status(400).send('Invalid goal id');
+            res.status(400).send(JSON.stringify('Invalid goal id'));
             return;
         }
         const goalId = new mongodb_1.ObjectId(req.params.id);
@@ -175,12 +175,12 @@ const deleteGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const goal = yield goalsCollection.findOne({ _id: goalId });
         // return 403 if user is not the owner of the goal
         if (goal.owner_id !== user.sub) {
-            res.status(403).send('Forbidden');
+            res.status(403).send(JSON.stringify('Forbidden'));
             return;
         }
         // return 404 if goal not found
         if (!goal) {
-            res.status(404).send('Goal not found');
+            res.status(404).send(JSON.stringify('Goal not found'));
             return;
         }
         const result = yield mongodb.getDb().db().collection('goals').deleteOne({ _id: goalId });

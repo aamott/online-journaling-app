@@ -24,7 +24,7 @@ const getAllGoals = async (req: any, res: any) => {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
 
@@ -48,7 +48,7 @@ const getGoal = async (req: any, res: any) => {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -59,13 +59,13 @@ const getGoal = async (req: any, res: any) => {
 
         // return 403 if user is not the owner of the goal
         if (goal.owner_id !== user.sub) {
-            res.status(403).send('Forbidden');
+            res.status(403).send(JSON.stringify('Forbidden'));
             return;
         }
 
         // return 404 if goal not found
         if (!goal) {
-            res.status(404).send('Goal not found');
+            res.status(404).send(JSON.stringify('Goal not found'));
             return;
         }
 
@@ -86,7 +86,7 @@ const addGoal = async (req: any, res: any) => {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -121,13 +121,13 @@ const updateGoal = async (req: any, res: any) => {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
 
         if (!ObjectId.isValid(req.params.id)) {
-            res.status(400).send('Invalid goal id');
+            res.status(400).send(JSON.stringify('Invalid goal id'));
             return;
         }
 
@@ -137,13 +137,13 @@ const updateGoal = async (req: any, res: any) => {
 
         // return 403 if user is not the owner of the goal
         if (goal.owner_id !== user.sub) {
-            res.status(403).send('Forbidden');
+            res.status(403).send(JSON.stringify('Forbidden'));
             return;
         }
          
         // return 404 if goal not found
         if (!goal) {
-            res.status(404).send('Goal not found');
+            res.status(404).send(JSON.stringify('Goal not found'));
             return;
         }
 
@@ -172,13 +172,13 @@ const deleteGoal = async (req: any, res: any) => {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
 
         if (!ObjectId.isValid(req.params.id)) {
-            res.status(400).send('Invalid goal id');
+            res.status(400).send(JSON.stringify('Invalid goal id'));
             return;
         }
 
@@ -189,13 +189,13 @@ const deleteGoal = async (req: any, res: any) => {
 
         // return 403 if user is not the owner of the goal
         if (goal.owner_id !== user.sub) {
-            res.status(403).send('Forbidden');
+            res.status(403).send(JSON.stringify('Forbidden'));
             return;
         }
 
         // return 404 if goal not found
         if (!goal) {
-            res.status(404).send('Goal not found');
+            res.status(404).send(JSON.stringify('Goal not found'));
             return;
         }
 

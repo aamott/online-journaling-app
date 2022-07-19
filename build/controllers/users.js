@@ -37,7 +37,7 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield mongodb.getDb().db().collection('users').findOne({ sub: user_id });
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         res.status(200).send(JSON.stringify(user));
@@ -54,7 +54,7 @@ const getActiveUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -63,7 +63,7 @@ const getActiveUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const userData = yield mongodb.getDb().db().collection('users').findOne({ sub: user.id });
         // return 404 if user not found
         if (!userData) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         res.status(200).send(JSON.stringify(userData));
@@ -106,7 +106,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const user = yield mongodb.getDb().db().collection('users').findOne({ sub: user_id });
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         // update the user
@@ -132,7 +132,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const user = yield mongodb.getDb().db().collection('users').findOne({ _id: user_id });
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         // delete the user
@@ -150,7 +150,7 @@ const loginCallback = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;

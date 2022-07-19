@@ -22,7 +22,7 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -45,7 +45,7 @@ const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -57,12 +57,12 @@ const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(entryId) });
         // return 404 if entry not found
         if (!entry) {
-            res.status(404).send('Entry not found');
+            res.status(404).send(JSON.stringify('Entry not found'));
             return;
         }
         // return 403 if entry not owned by user
         if (entry.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to view this entry');
+            res.status(403).send(JSON.stringify('You are not authorized to view this entry'));
             return;
         }
         res.status(200).send(JSON.stringify(entry));
@@ -80,7 +80,7 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -138,7 +138,7 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -150,19 +150,19 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         else if (!mongodb_1.ObjectId.isValid(entryId)) {
-            res.status(400).send('Invalid entry ID');
+            res.status(400).send(JSON.stringify('Invalid entry ID'));
             return;
         }
         const mongodb = res.locals.mongodb;
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 403 if entry not owned by user
         if (entry.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to update this entry');
+            res.status(403).send(JSON.stringify('You are not authorized to update this entry'));
             return;
         }
         // return 404 if entry not found
         if (!entry) {
-            res.status(404).send('Entry not found');
+            res.status(404).send(JSON.stringify('Entry not found'));
             return;
         }
         // convert media_ids to a list of ObjectIds
@@ -221,7 +221,7 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const user = req.oidc.user;
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -230,12 +230,12 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });
         // return 403 if entry not owned by user
         if (entry.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to delete this entry');
+            res.status(403).send(JSON.stringify('You are not authorized to delete this entry'));
             return;
         }
         // return 404 if entry not found
         if (!entry) {
-            res.status(404).send('Entry not found');
+            res.status(404).send(JSON.stringify('Entry not found'));
             return;
         }
         // delete the entry from the database

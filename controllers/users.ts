@@ -29,7 +29,7 @@ const getUser = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         res.status(200).send(JSON.stringify(user));
@@ -48,7 +48,7 @@ const getActiveUser = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -59,7 +59,7 @@ const getActiveUser = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!userData) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         res.status(200).send(JSON.stringify(userData));
@@ -109,7 +109,7 @@ const updateUser = async (req: any, res: any) => {
         
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
 
@@ -140,7 +140,7 @@ const deleteUser = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
 
@@ -161,7 +161,7 @@ const loginCallback = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;

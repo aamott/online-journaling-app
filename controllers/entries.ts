@@ -13,7 +13,7 @@ const getAllEntries = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -40,7 +40,7 @@ const getEntry = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -55,13 +55,13 @@ const getEntry = async (req: any, res: any) => {
 
         // return 404 if entry not found
         if (!entry) {
-            res.status(404).send('Entry not found');
+            res.status(404).send(JSON.stringify('Entry not found'));
             return;
         }
 
         // return 403 if entry not owned by user
         if (entry.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to view this entry');
+            res.status(403).send(JSON.stringify('You are not authorized to view this entry'));
             return;
         }
 
@@ -82,7 +82,7 @@ const addEntry = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -148,7 +148,7 @@ const updateEntry = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -160,7 +160,7 @@ const updateEntry = async (req: any, res: any) => {
             res.status(400).send(JSON.stringify('No entry ID provided'));
             return;
         } else if (!ObjectId.isValid(entryId)) {
-            res.status(400).send('Invalid entry ID');
+            res.status(400).send(JSON.stringify('Invalid entry ID'));
             return;
         }
         const mongodb = res.locals.mongodb;
@@ -168,13 +168,13 @@ const updateEntry = async (req: any, res: any) => {
 
         // return 403 if entry not owned by user
         if (entry.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to update this entry');
+            res.status(403).send(JSON.stringify('You are not authorized to update this entry'));
             return;
         }
 
         // return 404 if entry not found
         if (!entry) {
-            res.status(404).send('Entry not found');
+            res.status(404).send(JSON.stringify('Entry not found'));
             return;
         }
 
@@ -243,7 +243,7 @@ const deleteEntry = async (req: any, res: any) => {
 
         // return 404 if user not found
         if (!user) {
-            res.status(404).send('User not found');
+            res.status(404).send(JSON.stringify('User not found'));
             return;
         }
         user.id = user.sub;
@@ -254,13 +254,13 @@ const deleteEntry = async (req: any, res: any) => {
 
         // return 403 if entry not owned by user
         if (entry.owner_id !== user.sub) {
-            res.status(403).send('You are not authorized to delete this entry');
+            res.status(403).send(JSON.stringify('You are not authorized to delete this entry'));
             return;
         }
 
         // return 404 if entry not found
         if (!entry) {
-            res.status(404).send('Entry not found');
+            res.status(404).send(JSON.stringify('Entry not found'));
             return;
         }
 
