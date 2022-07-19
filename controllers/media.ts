@@ -19,9 +19,9 @@ const getAllMedia = async (req: any, res: any) => {
         user.id = user.sub;
 
         // get the user's media
-        const mediaIds = user.media_ids;
+        const media = await mongodb.getDb().db().collection('media').find({owner_id:user.sub}).toArray();
 
-        res.status(200).send(JSON.stringify(mediaIds));
+        res.status(200).send(JSON.stringify(media));
     }
     catch (err) {
         res.status(500).send("Internal server error");

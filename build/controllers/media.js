@@ -28,8 +28,8 @@ const getAllMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         user.id = user.sub;
         // get the user's media
-        const mediaIds = user.media_ids;
-        res.status(200).send(JSON.stringify(mediaIds));
+        const media = yield mongodb.getDb().db().collection('media').find({ owner_id: user.sub }).toArray();
+        res.status(200).send(JSON.stringify(media));
     }
     catch (err) {
         res.status(500).send("Internal server error");
