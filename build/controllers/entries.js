@@ -28,7 +28,8 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         user.id = user.sub;
         const user_id = user.sub;
         const entries = yield mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
-        res.status(200).send(JSON.stringify(entries));
+        const entriesList = yield entries.toArray();
+        res.status(200).send(JSON.stringify(entriesList));
     }
     catch (err) {
         res.status(500).send("Internal server error");

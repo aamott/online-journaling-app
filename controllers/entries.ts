@@ -20,7 +20,9 @@ const getAllEntries = async (req: any, res: any) => {
 
         const user_id = user.sub;
         const entries = await mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
-        res.status(200).send(JSON.stringify(entries));
+        const entriesList = await entries.toArray();
+
+        res.status(200).send(JSON.stringify(entriesList));
     }
     catch (err) {
         res.status(500).send("Internal server error");
