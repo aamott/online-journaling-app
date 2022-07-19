@@ -57,7 +57,6 @@ const swaggerUi = require('swagger-ui-express');
 router.use('/api-docs', swaggerUi.serve);
 router.get('/api-docs', swaggerUi.setup(swaggerDocument));
 // Authorization routes
-// > Authorization - TODO: move to a separate file
 router.get('/authorized', function (_req, res) {
     res.send(JSON.stringify('Secured Resource'));
 });

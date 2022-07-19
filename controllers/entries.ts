@@ -18,6 +18,11 @@ const getAllEntries = async (req: any, res: any) => {
         }
         user.id = user.sub;
 
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
+
         const user_id = user.sub;
         const entries = await mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
         const entriesList = await entries.toArray();
@@ -47,6 +52,11 @@ const getEntry = async (req: any, res: any) => {
 
         if (!entryId) {
             res.status(400).send(JSON.stringify('No entry ID provided'));
+            return;
+        }
+
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
             return;
         }
 
@@ -86,6 +96,11 @@ const addEntry = async (req: any, res: any) => {
             return;
         }
         user.id = user.sub;
+
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
 
         // DATA VALIDATION
         // entry should be a string
@@ -247,6 +262,11 @@ const deleteEntry = async (req: any, res: any) => {
             return;
         }
         user.id = user.sub;
+
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
 
         const mongodb = res.locals.mongodb;
         let entry_id = new ObjectId(req.params.id);

@@ -20,8 +20,6 @@ const getAllMedia = async (req: any, res: any) => {
 
         // get the user's media
         const mediaIds = user.media_ids;
-        // const media = await mongodb.getDb().db().collection('media').find({_id: {$in: mediaIds}});
-        // const mediaArray = await media.toArray();
 
         res.status(200).send(JSON.stringify(mediaIds));
     }

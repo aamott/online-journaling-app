@@ -53,6 +53,11 @@ const getGoal = async (req: any, res: any) => {
         }
         user.id = user.sub;
 
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
+
         const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: new ObjectId(req.params.id) });
@@ -90,6 +95,11 @@ const addGoal = async (req: any, res: any) => {
             return;
         }
         user.id = user.sub;
+
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
 
         const mongodb = res.locals.mongodb;
         

@@ -26,6 +26,10 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return;
         }
         user.id = user.sub;
+        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
         const user_id = user.sub;
         const entries = yield mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
         const entriesList = yield entries.toArray();
@@ -51,6 +55,10 @@ const getEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         user.id = user.sub;
         if (!entryId) {
             res.status(400).send(JSON.stringify('No entry ID provided'));
+            return;
+        }
+        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
             return;
         }
         const mongodb = res.locals.mongodb;
@@ -84,6 +92,10 @@ const addEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         user.id = user.sub;
+        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
         // DATA VALIDATION
         // entry should be a string
         let entry = req.body.entry || null;
@@ -225,6 +237,10 @@ const deleteEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         user.id = user.sub;
+        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
+            res.status(400).send(JSON.stringify('Invalid id'));
+            return;
+        }
         const mongodb = res.locals.mongodb;
         let entry_id = new mongodb_1.ObjectId(req.params.id);
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: entry_id });

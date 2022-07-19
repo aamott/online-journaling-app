@@ -40,7 +40,6 @@ router.use('/api-docs', swaggerUi.serve);
 router.get('/api-docs', swaggerUi.setup(swaggerDocument));
 
 // Authorization routes
-// > Authorization - TODO: move to a separate file
 router.get('/authorized', function (_req: any, res: { send: (arg0: string) => void; }) {
     res.send(JSON.stringify('Secured Resource'));
 });
