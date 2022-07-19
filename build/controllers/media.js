@@ -49,12 +49,16 @@ const getMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         user.id = user.sub;
+        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
+            res.status(400).send('Invalid media id');
+            return;
+        }
         const mediaId = new mongodb_1.ObjectId(req.params.id);
         if (!mediaId) {
             res.status(400).send('No media ID provided');
             return;
         }
-        const media = yield mongodb.getDb().db().collection('media').find(mediaId).toArray();
+        const media = yield mongodb.getDb().db().collection('media').findOne({ _id: mediaId });
         // return 404 if media not found
         if (!media) {
             res.status(404).send('Media not found');
@@ -124,8 +128,21 @@ const deleteMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // delete the media
     try {
         res.setHeader('Content-Type', 'application/json');
-        const mediaId = req.params.id;
-        const userId = req.oidc.user.sub;
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        if (!mongodb_1.ObjectId.isValid(req.params.id)) {
+            res.status(400).send('Invalid media id');
+            return;
+        }
+        const mediaId = new mongodb_1.ObjectId(req.params.id);
+        if (!mediaId) {
+            res.status(400).send('No media ID provided');
+            return;
+        }
         const media = yield mongodb.getDb().db().collection('media').findOne({ _id: mediaId });
         // return 404 if media not found
         if (!media) {
@@ -133,7 +150,12 @@ const deleteMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         // make sure user is owner of media
-        if (media.owner_id !== userId) {
+        if (media.owner_id !== user.sub) {
+            res.status(403).send('You are not authorized to view this media');
+            return;
+        }
+        // make sure user is owner of media
+        if (media.owner_id !== user.sub) {
             res.status(403).send('You are not authorized to delete this media');
             return;
         }

@@ -45,12 +45,20 @@ const getGoal = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+
         const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: new ObjectId(req.params.id) });
 
         // return 403 if user is not the owner of the goal
-        if (goal.owner_id !== req.locals.user_id) {
+        if (goal.owner_id !== user.sub) {
             res.status(403).send('Forbidden');
             return;
         }
@@ -75,10 +83,18 @@ const addGoal = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
 
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+
         const mongodb = res.locals.mongodb;
         
         let new_goal = {
-            owner_id: req.locals.user_id,
+            owner_id: user.sub,
             description: req.body.description,
             createdDate: new Date(),
             dueDate: new Date(), 
@@ -101,12 +117,26 @@ const updateGoal = async (req: any, res: any) => {
     // update the goal in test data
     try {
         res.setHeader('Content-Type', 'application/json')
+
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send('Invalid goal id');
+            return;
+        }
+
         const mongodb = res.locals.mongodb;
         const goalsCollection = mongodb.getDb().db().collection('goals');
         const goal = await goalsCollection.findOne({ _id: new ObjectId(req.params.id) });
 
         // return 403 if user is not the owner of the goal
-        if (goal.owner_id !== req.locals.user_id) {
+        if (goal.owner_id !== user.sub) {
             res.status(403).send('Forbidden');
             return;
         }
@@ -124,7 +154,7 @@ const updateGoal = async (req: any, res: any) => {
         goal.entry_ids = req.body.entry_ids || goal.entry_ids;
         goal.media_ids = req.body.media_ids || goal.media_ids;
 
-        const result = await goalsCollection.updateOne({ _id: new ObjectId(req.params.id) }, goal);
+        const result = await goalsCollection.updateOne({ _id: new ObjectId(req.params.id) }, { $set: goal });
         res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
@@ -138,11 +168,27 @@ const deleteGoal = async (req: any, res: any) => {
     // delete the goal from test data
     try {
         res.setHeader('Content-Type', 'application/json')
-        const goalId = req.params.id;
-        const goal = await mongodb.getDb().db().collection('goals').findOne({_id:goalId});
+
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        user.id = user.sub;
+
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(400).send('Invalid goal id');
+            return;
+        }
+
+        const goalId = new ObjectId(req.params.id);
+        const mongodb = res.locals.mongodb;
+        const goalsCollection = mongodb.getDb().db().collection('goals');
+        const goal = await goalsCollection.findOne({ _id: goalId });
 
         // return 403 if user is not the owner of the goal
-        if (goal.owner_id !== req.locals.user_id) {
+        if (goal.owner_id !== user.sub) {
             res.status(403).send('Forbidden');
             return;
         }
