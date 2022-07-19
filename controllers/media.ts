@@ -101,7 +101,12 @@ const addMedia = async (req: any, res: any) => {
         }
         let entry_object_ids: ObjectId[] = [];
         if (entry_ids) {
-            entry_object_ids = entry_ids.map((id:any) => new ObjectId(id));
+            entry_object_ids = entry_ids.map((id:any) => {
+                if (ObjectId.isValid(id)) {
+                    return new ObjectId(id);
+                }
+                return null;
+            });
         }
 
 
@@ -114,7 +119,7 @@ const addMedia = async (req: any, res: any) => {
         };
 
         const result = await mongodb.getDb().db().collection('media').insertOne(newMedia);
-        res.status(200).send(JSON.stringify( result.insertId));
+        res.status(200).send(JSON.stringify( result.insertedId ));
     }
     catch (err) {
         res.status(500).send("Internal server error");

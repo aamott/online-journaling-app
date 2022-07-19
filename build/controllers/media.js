@@ -97,7 +97,12 @@ const addMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         let entry_object_ids = [];
         if (entry_ids) {
-            entry_object_ids = entry_ids.map((id) => new mongodb_1.ObjectId(id));
+            entry_object_ids = entry_ids.map((id) => {
+                if (mongodb_1.ObjectId.isValid(id)) {
+                    return new mongodb_1.ObjectId(id);
+                }
+                return null;
+            });
         }
         let newMedia = {
             owner_id: owner_id,
@@ -107,7 +112,7 @@ const addMedia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             entry_ids: entry_object_ids,
         };
         const result = yield mongodb.getDb().db().collection('media').insertOne(newMedia);
-        res.status(200).send(JSON.stringify(result.insertId));
+        res.status(200).send(JSON.stringify(result.insertedId));
     }
     catch (err) {
         res.status(500).send("Internal server error");
