@@ -39,7 +39,8 @@ const getAllGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         const mongodb = res.locals.mongodb;
         const goals = mongodb.getDb().db().collection('goals').find({ owner_id: user.sub });
-        res.status(200).send(JSON.stringify(goals));
+        const goalsArray = yield goals.toArray();
+        res.status(200).send(JSON.stringify(goalsArray));
     }
     catch (err) {
         res.status(500).send("Internal server error");
