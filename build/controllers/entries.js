@@ -27,7 +27,7 @@ const getAllEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         user.id = user.sub;
         const user_id = user.sub;
-        const entries = yield mongodb.getDb().db().collection('entries').find({ owner_id: user_id }).toArray();
+        const entries = yield mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
         res.status(200).send(JSON.stringify(entries));
     }
     catch (err) {
@@ -141,6 +141,16 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         user.id = user.sub;
+        // check that the id is valid
+        const entryId = req.params.id;
+        if (!entryId) {
+            res.status(400).send('No entry ID provided');
+            return;
+        }
+        else if (!mongodb_1.ObjectId.isValid(entryId)) {
+            res.status(400).send('Invalid entry ID');
+            return;
+        }
         const mongodb = res.locals.mongodb;
         let entry = yield mongodb.getDb().db().collection('entries').findOne({ _id: new mongodb_1.ObjectId(req.params.id) });
         // return 403 if entry not owned by user
@@ -193,7 +203,7 @@ const updateEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         // update the entry in the database
         const result = yield mongodb.getDb().db().collection('entries').updateOne({ _id: new mongodb_1.ObjectId(req.params.id) }, { $set: entry });
-        res.send(JSON.stringify(result.modifiedCount));
+        res.status(200).send(JSON.stringify(result.modifiedCount));
     }
     catch (err) {
         res.status(500).send("Internal server error");

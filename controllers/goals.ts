@@ -21,11 +21,15 @@ const getAllGoals = async (req: any, res: any) => {
     try {
         res.setHeader('Content-Type', 'application/json')
 
-        const user_id = req.locals.user_id;
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
 
         const mongodb = res.locals.mongodb;
-        const goalsCollection = mongodb.getDb().db().collection('goals');
-        const goals = await goalsCollection.find({ owner_id: user_id }).toArray();
+        const goals = mongodb.getDb().db().collection('goals').find({ owner_id: user.sub });
         res.status(200).send(JSON.stringify(goals));
     }
     catch (err) {
@@ -64,14 +68,13 @@ const getGoal = async (req: any, res: any) => {
 };
  
  
- // POST /users
+ // POST /goals
 const addGoal = async (req: any, res: any) => {
     // add the goal to test data
     try {
         res.setHeader('Content-Type', 'application/json')
 
         const mongodb = res.locals.mongodb;
-        const goalsCollection = mongodb.getDb().db().collection('goals');
         
         let new_goal = {
             owner_id: req.locals.user_id,
@@ -82,6 +85,7 @@ const addGoal = async (req: any, res: any) => {
             entry_ids: [],
             media_ids:  [],
         }
+        const goalsCollection = mongodb.getDb().db().collection('goals');
         const result = await goalsCollection.insertOne(new_goal);
         res.status(200).send(JSON.stringify(result.insertedId));
     }

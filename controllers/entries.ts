@@ -19,7 +19,7 @@ const getAllEntries = async (req: any, res: any) => {
         user.id = user.sub;
 
         const user_id = user.sub;
-        const entries = await mongodb.getDb().db().collection('entries').find({ owner_id: user_id }).toArray();
+        const entries = await mongodb.getDb().db().collection('entries').find({ owner_id: user_id });
         res.status(200).send(JSON.stringify(entries));
     }
     catch (err) {
@@ -150,6 +150,16 @@ const updateEntry = async (req: any, res: any) => {
             return;
         }
         user.id = user.sub;
+
+        // check that the id is valid
+        const entryId = req.params.id;
+        if (!entryId) {
+            res.status(400).send('No entry ID provided');
+            return;
+        } else if (!ObjectId.isValid(entryId)) {
+            res.status(400).send('Invalid entry ID');
+            return;
+        }
         const mongodb = res.locals.mongodb;
         let entry = await mongodb.getDb().db().collection('entries').findOne({ _id: new ObjectId(req.params.id) });
 
@@ -210,7 +220,7 @@ const updateEntry = async (req: any, res: any) => {
 
         // update the entry in the database
         const result = await mongodb.getDb().db().collection('entries').updateOne({ _id: new ObjectId(req.params.id) }, { $set: entry });
-        res.send(JSON.stringify(result.modifiedCount));
+        res.status(200).send(JSON.stringify(result.modifiedCount));
 
     }
     catch (err) {

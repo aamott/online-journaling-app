@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import {getAllEntries, getEntry,  addEntry, updateEntry,  deleteEntry} from '../../controllers/entries';
 
 let temp_entry_id = new ObjectId(1).toString();
-describe('Users', () => {
+describe('Entries', () => {
 
     test('responds to GET /entries', async () => {
         // create a variable to store the response
@@ -14,7 +14,13 @@ describe('Users', () => {
         });
 
         // mock the request object
-        const req = {};
+        const req = {
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
+        };
 
         // mock the response
         const res = {
@@ -23,7 +29,26 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            find: jest.fn().mockImplementation((query) => {
+                                                return [];
+                                            }),
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
 
         // call the function
@@ -35,8 +60,6 @@ describe('Users', () => {
         expect(send).toHaveBeenCalled();
         let response = JSON.parse(entries_json);
         expect(response).toBeInstanceOf(Array);
-
-        temp_entry_id = response[0]._id;
     });
 
 
@@ -52,8 +75,14 @@ describe('Users', () => {
         // mock the request object
         const req = {
             body: {
-                name: "Test Entry"
-            }
+                name: "Test Entry",
+                entry: "Test Entry content"
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
 
         // mock the response
@@ -63,7 +92,37 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    };
+                                                }
+                                            }),
+                                            insertOne: jest.fn().mockImplementation((query, update) => {
+                                                if (query._id) {
+                                                    return {
+                                                        insertedId: temp_entry_id,
+                                                    };
+                                                }
+                                            })
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
 
         // call the function
@@ -73,25 +132,11 @@ describe('Users', () => {
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
         expect(send).toHaveBeenCalled();
-
-        // check that the response was an ObjectId
-        let response = JSON.parse(response_json);
-
-        // check that the response was an ObjectId
-        let id: ObjectId | null;
-        try {
-            id = new ObjectId(response);
-            // temp_entry_id = id;
-        }
-        catch (err) {
-            id = null;
-        }
-        expect(id).toBeInstanceOf(ObjectId);
     }
     );
 
 
-    test('responds to GET /users/:id', async () => {
+    test('responds to GET /entries/:id', async () => {
         // create a variable to store the response
         let user_json = "";
 
@@ -104,7 +149,12 @@ describe('Users', () => {
         const req = {
             params: {
                 id: temp_entry_id
-            }
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
 
         // mock the response
@@ -114,7 +164,30 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    }
+                                                }
+                                            }),
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
 
         // call the function
@@ -144,8 +217,14 @@ describe('Users', () => {
                 id: temp_entry_id
             },
             body: {
-                name: "Test Entry"
-            }
+                name: "Test Entry",
+                entry: "Test Entry content"
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
 
         // mock the response
@@ -155,7 +234,37 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    };
+                                                }
+                                            }),
+                                            updateOne: jest.fn().mockImplementation((query, update) => {
+                                                if (query._id) {
+                                                    return {
+                                                        modifiedCount: 1,
+                                                    };
+                                                }
+                                            })
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
 
         // call the function
@@ -163,12 +272,8 @@ describe('Users', () => {
 
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
-        expect(res.status).toHaveBeenCalledWith(200);
         expect(send).toHaveBeenCalled();
-
-        // check that the response was an ObjectId
-        let response = JSON.parse(response_json);
-        expect(response).toBeInstanceOf(Object);
+        expect(res.status).toHaveBeenCalledWith(200);
     }
     );
 
@@ -186,7 +291,12 @@ describe('Users', () => {
         const req = {
             params: {
                 id: temp_entry_id
-            }
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
 
         // mock the response
@@ -196,7 +306,37 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName: string) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    };
+                                                }
+                                            }),
+                                            deleteOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        deletedCount: 1,
+                                                    };
+                                                }
+                                            }),
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
 
         // call the function

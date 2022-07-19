@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
 const entries_1 = require("../../controllers/entries");
 let temp_entry_id = new mongodb_1.ObjectId(1).toString();
-describe('Users', () => {
+describe('Entries', () => {
     test('responds to GET /entries', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let entries_json = "";
@@ -21,7 +21,13 @@ describe('Users', () => {
             entries_json = send.mock.calls[0][0];
         });
         // mock the request object
-        const req = {};
+        const req = {
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
+        };
         // mock the response
         const res = {
             users: null,
@@ -29,7 +35,26 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            find: jest.fn().mockImplementation((query) => {
+                                                return [];
+                                            }),
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, entries_1.getAllEntries)(req, res);
@@ -39,7 +64,6 @@ describe('Users', () => {
         expect(send).toHaveBeenCalled();
         let response = JSON.parse(entries_json);
         expect(response).toBeInstanceOf(Array);
-        temp_entry_id = response[0]._id;
     }));
     test('responds to POST /entry', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
@@ -51,8 +75,14 @@ describe('Users', () => {
         // mock the request object
         const req = {
             body: {
-                name: "Test Entry"
-            }
+                name: "Test Entry",
+                entry: "Test Entry content"
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
         // mock the response
         const res = {
@@ -61,7 +91,37 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    };
+                                                }
+                                            }),
+                                            insertOne: jest.fn().mockImplementation((query, update) => {
+                                                if (query._id) {
+                                                    return {
+                                                        insertedId: temp_entry_id,
+                                                    };
+                                                }
+                                            })
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, entries_1.addEntry)(req, res);
@@ -69,20 +129,8 @@ describe('Users', () => {
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(res.status).toHaveBeenCalledWith(200);
         expect(send).toHaveBeenCalled();
-        // check that the response was an ObjectId
-        let response = JSON.parse(response_json);
-        // check that the response was an ObjectId
-        let id;
-        try {
-            id = new mongodb_1.ObjectId(response);
-            // temp_entry_id = id;
-        }
-        catch (err) {
-            id = null;
-        }
-        expect(id).toBeInstanceOf(mongodb_1.ObjectId);
     }));
-    test('responds to GET /users/:id', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('responds to GET /entries/:id', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
         let user_json = "";
         // mock the send function
@@ -93,7 +141,12 @@ describe('Users', () => {
         const req = {
             params: {
                 id: temp_entry_id
-            }
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
         // mock the response
         const res = {
@@ -102,7 +155,30 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    };
+                                                }
+                                            }),
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, entries_1.getEntry)(req, res);
@@ -126,8 +202,14 @@ describe('Users', () => {
                 id: temp_entry_id
             },
             body: {
-                name: "Test Entry"
-            }
+                name: "Test Entry",
+                entry: "Test Entry content"
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
         // mock the response
         const res = {
@@ -136,17 +218,44 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    };
+                                                }
+                                            }),
+                                            updateOne: jest.fn().mockImplementation((query, update) => {
+                                                if (query._id) {
+                                                    return {
+                                                        modifiedCount: 1,
+                                                    };
+                                                }
+                                            })
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, entries_1.updateEntry)(req, res);
         // check the response
         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
-        expect(res.status).toHaveBeenCalledWith(200);
         expect(send).toHaveBeenCalled();
-        // check that the response was an ObjectId
-        let response = JSON.parse(response_json);
-        expect(response).toBeInstanceOf(Object);
+        expect(res.status).toHaveBeenCalledWith(200);
     }));
     test('responds to DELETE /entry/:id', () => __awaiter(void 0, void 0, void 0, function* () {
         // create a variable to store the response
@@ -159,7 +268,12 @@ describe('Users', () => {
         const req = {
             params: {
                 id: temp_entry_id
-            }
+            },
+            oidc: {
+                user: {
+                    sub: 'Google|23432u432890',
+                }
+            },
         };
         // mock the response
         const res = {
@@ -168,7 +282,37 @@ describe('Users', () => {
             status: jest.fn().mockReturnValue({
                 send: send
             }),
-            send: send
+            send: send,
+            locals: {
+                mongodb: {
+                    getDb: () => {
+                        return {
+                            db: () => {
+                                return {
+                                    collection: (collectionName) => {
+                                        return {
+                                            findOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        owner_id: req.oidc.user.sub,
+                                                    };
+                                                }
+                                            }),
+                                            deleteOne: jest.fn().mockImplementation((query) => {
+                                                if (query._id) {
+                                                    return {
+                                                        deletedCount: 1,
+                                                    };
+                                                }
+                                            }),
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }
+            }
         };
         // call the function
         yield (0, entries_1.deleteEntry)(req, res);

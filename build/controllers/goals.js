@@ -31,10 +31,14 @@ const getAllGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // return test data
     try {
         res.setHeader('Content-Type', 'application/json');
-        const user_id = req.locals.user_id;
+        const user = req.oidc.user;
+        // return 404 if user not found
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
         const mongodb = res.locals.mongodb;
-        const goalsCollection = mongodb.getDb().db().collection('goals');
-        const goals = yield goalsCollection.find({ owner_id: user_id }).toArray();
+        const goals = mongodb.getDb().db().collection('goals').find({ owner_id: user.sub });
         res.status(200).send(JSON.stringify(goals));
     }
     catch (err) {
@@ -67,13 +71,12 @@ const getGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getGoal = getGoal;
-// POST /users
+// POST /goals
 const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // add the goal to test data
     try {
         res.setHeader('Content-Type', 'application/json');
         const mongodb = res.locals.mongodb;
-        const goalsCollection = mongodb.getDb().db().collection('goals');
         let new_goal = {
             owner_id: req.locals.user_id,
             description: req.body.description,
@@ -83,6 +86,7 @@ const addGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             entry_ids: [],
             media_ids: [],
         };
+        const goalsCollection = mongodb.getDb().db().collection('goals');
         const result = yield goalsCollection.insertOne(new_goal);
         res.status(200).send(JSON.stringify(result.insertedId));
     }
