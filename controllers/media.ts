@@ -101,7 +101,7 @@ const addMedia = async (req: any, res: any) => {
         }
         let entry_object_ids: ObjectId[] = [];
         if (entry_ids) {
-            entry_object_ids = entry_ids.map((id) => new ObjectId(id));
+            entry_object_ids = entry_ids.map((id:any) => new ObjectId(id));
         }
 
 
